@@ -248,13 +248,23 @@ public class EditGroupActivity extends AppCompatActivity {
         return true;
     }
 
+    private void setGroup() {
+        group.setTime(calendar.getTime());
+        group.setLocation(location);
+        group.setHead(head);
+        group.setHeadPhone(headPhone);
+        group.update();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
         switch (id) {
             case R.id.action_done:
                 this.finish();  //finish当前activity
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                setGroup();
                 return true;
             case android.R.id.home:
                 new AlertDialog.Builder(EditGroupActivity.this)
@@ -262,7 +272,7 @@ public class EditGroupActivity extends AppCompatActivity {
                         .setPositiveButton("保存", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //TODO 保存更改
+                                setGroup();
                                 EditGroupActivity.this.finish();  //finish当前activity
                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
