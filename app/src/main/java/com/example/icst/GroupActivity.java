@@ -137,6 +137,7 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
     @Override
@@ -188,9 +189,4 @@ public class GroupActivity extends AppCompatActivity {
             groupAdapter.setRespond(msg.arg1, (String) msg.obj);
         }
     };
-
-    //TODO 读取短信库
-    public void getSmsFromPhone() {
-
-    }
 }

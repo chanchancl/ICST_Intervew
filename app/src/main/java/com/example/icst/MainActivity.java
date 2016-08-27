@@ -209,15 +209,13 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = intent.getData();
             csv = new File(uri.getPath());
             thread.start();
-        } else setContentMain(studentDao.count() == 0);
-
-        setContentMain(groupDao.count() == 0);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mainAdapter.notifyDataSetChanged();
+        setContentMain(groupDao.count() == 0);
     }
 
     @Override
@@ -262,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     inputData();
-                    setContentMain(studentDao.count() == 0);
+                    setContentMain(groupDao.count() == 0);
                 }
             });
         } else {
