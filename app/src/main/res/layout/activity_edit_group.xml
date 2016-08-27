@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:fitsSystemWindows="true"
+app:layout_scrollFlags="scroll|enterAlways">
+
+<android.support.design.widget.AppBarLayout
+    android:id="@+id/appbar"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/app_bar_height"
+    android:theme="@style/AppTheme.AppBarOverlay">
+
+    <android.support.design.widget.CollapsingToolbarLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:titleEnabled="false">
+
+        <LinearLayout
+            android:layout_marginTop="88dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal">
+            <LinearLayout
+                android:id="@+id/timeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/my_text_margin">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="时间："
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white" />
+                <TextView
+                    android:id="@+id/dateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:text="2016年9月17日"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white"
+                    android:background="@drawable/abc_list_focused_holo"
+                    android:clickable="true" />
+                <TextView
+                    android:id="@+id/timeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14:00"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white"
+                    android:background="@drawable/abc_list_focused_holo"
+                    android:clickable="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/LocationLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/my_text_margin">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="地点："
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white" />
+                <TextView
+                    android:id="@+id/locationText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A4-201"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white"
+                    android:background="@drawable/abc_list_focused_holo"
+                    android:clickable="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ConnectLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/my_text_margin">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="联系人："
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/connectText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="杨泽霖  13265940755"
+                    style="@style/Base.TextAppearance.AppCompat.Title.Inverse"
+                    android:textColor="@color/white"
+                    android:background="@drawable/abc_list_focused_holo"
+                    android:clickable="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            android:background="?attr/colorPrimary" />
+
+    </android.support.design.widget.CollapsingToolbarLayout>
+
+</android.support.design.widget.AppBarLayout>
+
+<!--可滑动的布局内容-->
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/studentRecycleView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</android.support.design.widget.CoordinatorLayout>
+

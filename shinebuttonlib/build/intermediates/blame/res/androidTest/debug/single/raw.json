@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw\\assign.png",
+        "source": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\bundles\\debug\\res\\raw\\assign.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw\\smile.png",
+        "source": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\bundles\\debug\\res\\raw\\smile.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw\\star.png",
+        "source": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\bundles\\debug\\res\\raw\\star.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw\\like.png",
+        "source": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\bundles\\debug\\res\\raw\\like.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw\\heart.png",
+        "source": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\bundles\\debug\\res\\raw\\heart.png"
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\debug\\raw\\star.png",
+        "source": "C:\\ICST\\shinebuttonlib\\src\\main\\res\\raw\\star.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\debug\\raw\\like.png",
+        "source": "C:\\ICST\\shinebuttonlib\\src\\main\\res\\raw\\like.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\debug\\raw\\assign.png",
+        "source": "C:\\ICST\\shinebuttonlib\\src\\main\\res\\raw\\assign.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\debug\\raw\\smile.png",
+        "source": "C:\\ICST\\shinebuttonlib\\src\\main\\res\\raw\\smile.png"
+    },
+    {
+        "merged": "C:\\ICST\\shinebuttonlib\\build\\intermediates\\res\\merged\\debug\\raw\\heart.png",
+        "source": "C:\\ICST\\shinebuttonlib\\src\\main\\res\\raw\\heart.png"
+    }
+]
