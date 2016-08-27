@@ -139,6 +139,7 @@ public class EditGroupActivity extends AppCompatActivity {
                 final EditText editText = (EditText) layout.findViewById(R.id.editText);
                 editText.setText(locationText.getText());
 
+                editText.setText(location);
                 new AlertDialog.Builder(EditGroupActivity.this).setView(layout)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
@@ -162,7 +163,8 @@ public class EditGroupActivity extends AppCompatActivity {
                 editLeader.setText("杨泽霖");
                 final EditText editLeaderPhone = (EditText) layout.findViewById(R.id.editLeaderPhone);
                 editLeaderPhone.setText("13265940755");
-
+                editLeader.setText(head);
+                editLeaderPhone.setText(headPhone);
                 new AlertDialog.Builder(EditGroupActivity.this).setView(layout)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
@@ -183,7 +185,6 @@ public class EditGroupActivity extends AppCompatActivity {
     }
 
     private void show(){
-        calendar.setTime(group.getTime());
         dateText.setText(String.format("%1$tY年%1$tb%1$td日", calendar));
         timeText.setText(String.format("%1$tH:%1$tM", calendar));
         locationText.setText(location);

@@ -1,19 +1,15 @@
 package com.example.icst;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.database.ContentObserver;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -32,15 +28,13 @@ import org.greenrobot.greendao.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GroupActivity extends AppCompatActivity {
 
     private Paint p;
     private Group group;
     private List<Student> students = new ArrayList<>();
-    private TextView stateText;
+    private TextView stateText, timeText, locationText;
 
     private DaoSession session;
     private GroupDao groupDao;
@@ -64,6 +58,8 @@ public class GroupActivity extends AppCompatActivity {
         Intent intent = getIntent();
         long id = intent.getLongExtra(MainAdapter.EXTRA_MESSAGE, -1);
         stateText = (TextView) findViewById(R.id.detail_state);
+        timeText = (TextView) findViewById(R.id.timeText);
+        locationText = (TextView) findViewById(R.id.locationText);
         setTitle("第" + id + "组");
         //数据库相关
         session = DBUtil.getDaoSession(this);
@@ -78,13 +74,13 @@ public class GroupActivity extends AppCompatActivity {
                 .where(StudentDao.Properties.GroupId.eq(id))
                 .orderAsc(StudentDao.Properties.Id)
                 .list();
-        groupAdapter = new GroupAdapter(students,this);
+        groupAdapter = new GroupAdapter(students, this);
         studentList.setAdapter(groupAdapter);
         stateShow(group.getState());
         //TODO SmsObserver
-        smsContentObserver = new SMSContentObserver(this,handler,students);
+        smsContentObserver = new SMSContentObserver(this, handler, students);
         Uri SMS_INBOX = Uri.parse("content://sms/");
-        getContentResolver().registerContentObserver(SMS_INBOX,true,smsContentObserver);
+        getContentResolver().registerContentObserver(SMS_INBOX, true, smsContentObserver);
         smsContentObserver.onChange(false);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
@@ -107,15 +103,15 @@ public class GroupActivity extends AppCompatActivity {
                     View itemView = viewHolder.itemView;
 
                     Paint p = new Paint();
-                        p.setARGB(255, 183, 28, 28);
-                        // Draw Rect with varying right side, equal to displacement dX
-                        c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
-                                (float) itemView.getBottom(), p);
-                        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete);
-                        c.drawBitmap(icon,
-                                (float) itemView.getLeft() + 50,
-                                (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight())/2,
-                                p);
+                    p.setARGB(255, 183, 28, 28);
+                    // Draw Rect with varying right side, equal to displacement dX
+                    c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
+                            (float) itemView.getBottom(), p);
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete);
+                    c.drawBitmap(icon,
+                            (float) itemView.getLeft() + 50,
+                            (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
+                            p);
 
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 }
@@ -143,20 +139,15 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        timeText.setText(group.getTimes() + ", ");
+        locationText.setText(group.getLocation());
+    }
+
     private void stateShow(int state) {
-        switch (state) {
-            case 0:
-                stateText.setText("尚未开始");
-                break;
-            case 1:
-                stateText.setText("正在签到");
-                break;
-            case 2:
-                stateText.setText("确认名单");
-                break;
-            default:
-                stateText.setText("出现错误");
-        }
+        stateText.setText(Format.State(state));
         groupAdapter.controlText(state);
     }
 
@@ -175,22 +166,26 @@ public class GroupActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_edit) {
-            Intent intent = new Intent();
-            intent.setClass(GroupActivity.this,EditGroupActivity.class);
-            intent.putExtra(EXTRA_MESSAGE, group.getId());
-            startActivity(intent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            return true;
+        switch (id) {
+            case R.id.action_edit:
+                Intent intent = new Intent();
+                intent.setClass(GroupActivity.this, EditGroupActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, group.getId());
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                return true;
+            case android.R.id.home:
+                this.finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    final Handler handler =  new Handler() {
+    final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            groupAdapter.setRespond(msg.arg1,(String) msg.obj);
+            groupAdapter.setRespond(msg.arg1, (String) msg.obj);
         }
     };
 

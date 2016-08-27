@@ -49,11 +49,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder myViewHolder,final int i){
+    public void onBindViewHolder(MyViewHolder myViewHolder, int i) {
         final long id = mData.get(i).getId();
         myViewHolder.mTitle.setText("第"+ id +"组");
         myViewHolder.mTime.setText(mData.get(i).getTimes());
         myViewHolder.mLocation.setText(mData.get(i).getLocation());
+        myViewHolder.mState.setText(Format.State(mData.get(i).getState()));
         myViewHolder.mCardView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){

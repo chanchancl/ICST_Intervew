@@ -71,13 +71,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="9月17日 12:00, "
                         android:textColor="@color/WhitePurple"
-                        android:id="@+id/detail_Time" />
+                        android:id="@+id/timeText" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="A4-201"
-                        android:id="@+id/detail_Location"
+                        android:id="@+id/locationText"
                         android:textColor="@color/WhitePurple"
                         android:layout_gravity="center" />
                 </LinearLayout>

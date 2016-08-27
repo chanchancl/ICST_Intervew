@@ -99,7 +99,7 @@ public class Format {
     }
 
     public static String Time(Date time){
-        return String.format(Locale.UK,"%1$tb%1$td日 %1$tH:%1$tM", time);
+        return String.format(Locale.CHINA, "%1$tb%1$td日 %1$tH:%1$tM", time);
     }
 
     public static String Adjust(boolean adjust) {
@@ -107,4 +107,16 @@ public class Format {
         else return "不服从调剂";
     }
 
+    public static String State(int state) {
+        switch (state) {
+            case 0:
+                return "尚未开始";
+            case 1:
+                return "正在签到";
+            case 2:
+                return "确认名单";
+            default:
+                return "出现错误";
+        }
+    }
 }

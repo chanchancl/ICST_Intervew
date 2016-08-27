@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private File csv;
     private Thread thread;
     private Intent intent;
+    private MainAdapter mainAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,13 +205,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        if (intent.ACTION_VIEW.equals(action)) {
+        if (Intent.ACTION_VIEW.equals(action)) {
             Uri uri = intent.getData();
             csv = new File(uri.getPath());
             thread.start();
         } else setContentMain(studentDao.count() == 0);
 
         setContentMain(groupDao.count() == 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -228,10 +235,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -275,7 +282,8 @@ public class MainActivity extends AppCompatActivity {
             groupQuery = groupDao.queryBuilder().orderAsc(GroupDao.Properties.Id).build();
             RecyclerView groupList = (RecyclerView) findViewById(R.id.groupRecycleView);
             groupList.setLayoutManager(new LinearLayoutManager(this));
-            groupList.setAdapter(new MainAdapter(groupQuery.list(), this));
+            mainAdapter = new MainAdapter(groupQuery.list(), this);
+            groupList.setAdapter(mainAdapter);
         }
         return;
     }
