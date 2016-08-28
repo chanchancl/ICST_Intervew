@@ -320,6 +320,11 @@ public class Student {
         this.groupId = groupId;
         this.respond = "正在读取...";
     }
+
+    public boolean changeSign() {
+        Signed = !Signed;
+        return Signed;
+    }
     // KEEP METHODS END
 
 }

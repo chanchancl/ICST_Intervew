@@ -15,7 +15,8 @@ public class Format {
             case 3: return "资讯传媒部";
             case 4: return "知识管理部";
             case 5: return "外联交流部";
-            default: return "**部门**";
+            default:
+                return "无部门";
         }
     }
 
@@ -118,5 +119,28 @@ public class Format {
             default:
                 return "出现错误";
         }
+    }
+
+    public static String[] Department(int wish1, int wish2, boolean adjust) {
+        String[] stringList;
+        if (adjust) {
+            stringList = new String[]{
+                    "取消",
+                    "人力资源部",
+                    "项目运营部",
+                    "资讯传媒部",
+                    "知识管理部",
+                    "外联交流部"
+            };
+            stringList[wish1] += "(第一志愿)";
+            stringList[wish2] += "(第二志愿)";
+        } else {
+            stringList = new String[]{
+                    "取消",
+                    Format.Department(wish1) + "(第一志愿)",
+                    Format.Department(wish2) + "(第二志愿)"
+            };
+        }
+        return stringList;
     }
 }

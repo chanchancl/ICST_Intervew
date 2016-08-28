@@ -1,24 +1,21 @@
 package com.example.icst;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.sackcentury.shinebuttonlib.ShineButton;
-
 import java.util.List;
 
-/**
- * Created by 大杨编 on 2016/7/28.
- */
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
 
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
@@ -26,58 +23,121 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     private Context mContext;
     int state;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         public ImageView mPhoto;
-        public TextView mName,mRespond;
-        public FrameLayout signLayout;
-        public ShineButton signButton;
+        public TextView mName, mRespond;
         public RelativeLayout mLayout;
-        public MyViewHolder(View itemView){
+        public Button mButton;
+
+        public MyViewHolder(View itemView) {
             super(itemView);
-            mPhoto=(ImageView)itemView.findViewById(R.id.Photo);
-            mName=(TextView)itemView.findViewById(R.id.studentName);
-            mRespond=(TextView) itemView.findViewById(R.id.studentRespond);
-            signButton = (ShineButton) itemView.findViewById(R.id.signButton) ;
-            signLayout = (FrameLayout) itemView.findViewById(R.id.signLayout) ;
-            mLayout=(RelativeLayout)itemView.findViewById(R.id.studentLayout);
+            mPhoto = (ImageView) itemView.findViewById(R.id.Photo);
+            mName = (TextView) itemView.findViewById(R.id.studentName);
+            mRespond = (TextView) itemView.findViewById(R.id.studentRespond);
+            mLayout = (RelativeLayout) itemView.findViewById(R.id.studentLayout);
+            mButton = (Button) itemView.findViewById(R.id.button);
         }
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int i){
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_group,viewGroup,false);
-        final MyViewHolder vh = new MyViewHolder(v);
-        vh.signButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(View view, boolean checked) {
-                mData.get(vh.getAdapterPosition()).setSigned(checked);
-                mData.get(vh.getAdapterPosition()).update();
-            }
-        });
-        return vh;
+    public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_group, viewGroup, false);
+        return new MyViewHolder(v);
     }
 
     public GroupAdapter(List<Student> data, Context context) {
-        mData=data;
-        mContext=context;
+        mData = data;
+        mContext = context;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder myViewHolder, int i){
+    public void onBindViewHolder(final MyViewHolder myViewHolder, int i) {
         final long id = mData.get(i).getId();
-        if (state == 1){
-            myViewHolder.signLayout.setVisibility(View.VISIBLE);
-            myViewHolder.signButton.setChecked(mData.get(myViewHolder.getAdapterPosition()).getSigned());
-        } else{
-            myViewHolder.signLayout.setVisibility(View.GONE);
+        switch (state) {
+            case 0:
+                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                myViewHolder.mRespond.setText(mData.get(i).respond);
+                myViewHolder.mRespond.setTextColor(ContextCompat.getColor(mContext, R.color.TextGray));
+                myViewHolder.mButton.setVisibility(View.GONE);
+                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                break;
+            case 1:
+                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                myViewHolder.mRespond.setText(mData.get(i).respond);
+                myViewHolder.mRespond.setTextColor(ContextCompat.getColor(mContext, R.color.TextGray));
+                myViewHolder.mButton.setVisibility(View.VISIBLE);
+                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                if (mData.get(myViewHolder.getAdapterPosition()).getSigned()) {
+                    myViewHolder.mButton.setText("已签到");
+                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                } else {
+                    myViewHolder.mButton.setText("签到");
+                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                }
+                myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mData.get(myViewHolder.getAdapterPosition()).changeSign()) {
+                            myViewHolder.mButton.setText("已签到");
+                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                        } else {
+                            myViewHolder.mButton.setText("签到");
+                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                        }
+                    }
+                });
+                break;
+            case 2:
+                myViewHolder.mButton.setVisibility(View.VISIBLE);
+                if (mData.get(myViewHolder.getAdapterPosition()).getSigned()) {
+                    myViewHolder.mRespond.setText(mData.get(i).respond);
+                    myViewHolder.mRespond.setTextColor(ContextCompat.getColor(mContext, R.color.TextGray));
+                } else {
+                    myViewHolder.mRespond.setText("未签到");
+                    myViewHolder.mRespond.setTextColor(ContextCompat.getColor(mContext, R.color.Red));
+                }
+                if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
+                    myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                    myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
+                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                } else {
+                    myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                    myViewHolder.mButton.setText("通过");
+                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                }
+                myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO
+                        new AlertDialog.Builder(mContext)
+                                .setTitle("选择部门")
+                                .setItems(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getWish1(),
+                                        mData.get(myViewHolder.getAdapterPosition()).getWish2(),
+                                        mData.get(myViewHolder.getAdapterPosition()).getAdjust()
+                                ), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mData.get(myViewHolder.getAdapterPosition()).setAccepted(which);
+                                        if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
+                                            myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                                            myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
+                                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                                        } else {
+                                            myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                                            myViewHolder.mButton.setText("通过");
+                                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                                        }
+                                    }
+                                }).show();
+                    }
+                });
+                break;
         }
         myViewHolder.mName.setText(mData.get(i).getName());
-        myViewHolder.mRespond.setText(mData.get(i).respond);
-        myViewHolder.mLayout.setOnClickListener(new View.OnClickListener(){
+        myViewHolder.mLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent(mContext, StudentActivity.class);
-                intent.putExtra(STUDENT_ID,id);
+                intent.putExtra(STUDENT_ID, id);
                 mContext.startActivity(intent);
             }
         });
@@ -141,8 +201,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         return mData.size();
     }
 
-    public void controlText(int _state){
-        state=_state;
+    public void controlText(int _state) {
+        state = _state;
         notifyDataSetChanged();
     }
 
@@ -152,7 +212,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         notifyItemRangeChanged(position, mData.size());
     }
 
-    public void setRespond(int position,String respond){
+    public void setRespond(int position, String respond) {
         mData.get(position).respond = respond;
         notifyItemChanged(position);
     }

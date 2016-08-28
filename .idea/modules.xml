@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/DaoTestGenerator/DaoTestGenerator.iml" filepath="$PROJECT_DIR$/DaoTestGenerator/DaoTestGenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/ICST.iml" filepath="$PROJECT_DIR$/ICST.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/shinebuttonlib/shinebuttonlib.iml" filepath="$PROJECT_DIR$/shinebuttonlib/shinebuttonlib.iml" />
     </modules>
   </component>
 </project>

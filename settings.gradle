@@ -1,1 +1,1 @@
-include ':app', ':shinebuttonlib', 'DaoGenerator', ':DaoTestGenerator'
+include ':app', 'DaoGenerator', ':DaoTestGenerator'

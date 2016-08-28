@@ -18,7 +18,6 @@ import java.util.List;
 public class ReadCSVThread extends Thread {
 
     int name = 1, gender = 6, photo = 5, college = 11, major = 12, phone = 7, phoneShort = 8, QQ = 9, wechat = 10, dorm = 11, adjust = 14, wish1 = 15, wish2 = 16, note = 17;
-
     BufferedReader br;
 
     ReadCSVThread(String CSVPath) {

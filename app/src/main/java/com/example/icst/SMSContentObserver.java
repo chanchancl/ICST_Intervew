@@ -18,14 +18,15 @@ import java.util.List;
 public class SMSContentObserver extends ContentObserver {
     private List<Student> students;
 
-    private Context mContext  ;
-    private Handler mHandler ;   //更新UI线程
+    private Context mContext;
+    private Handler mHandler;   //更新UI线程
 
     private Message msg;
+
     public SMSContentObserver(Context context, Handler handler, List<Student> studentList) {
         super(handler);
-        mContext = context ;
-        mHandler = handler ;
+        mContext = context;
+        mHandler = handler;
         students = studentList;
     }
 
@@ -43,19 +44,19 @@ public class SMSContentObserver extends ContentObserver {
                     Cursor cursor = mContext.getContentResolver().query(
                             SMSUri,
                             new String[]{"address", "body", "type", "date"},
-                            "address='" + students.get(i).getPhone() +"' AND type=1",
+                            "address='" + students.get(i).getPhone() + "' AND type=1",
                             null,
                             "date desc");
 
                     if (cursor != null && cursor.moveToFirst()) {
                         msg = new Message();
                         String msgBody = cursor.getString(cursor.getColumnIndex("body"));
-                        msg.obj = msgBody.substring(0,10)+"...";
+                        if (msgBody.length() > 12) msg.obj = msgBody.substring(0, 10) + "...";
+                        else msg.obj = msgBody;
                         msg.arg1 = i;
                         mHandler.sendMessage(msg);
                         cursor.close();
-                    }
-                    else {
+                    } else {
                         msg = new Message();
                         msg.obj = "（未回复）";
                         msg.arg1 = i;

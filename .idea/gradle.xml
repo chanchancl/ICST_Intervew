@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/DaoGenerator" />
             <option value="$PROJECT_DIR$/DaoTestGenerator" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/shinebuttonlib" />
           </set>
         </option>
         <option name="myModules">
@@ -21,7 +20,6 @@
             <option value="$PROJECT_DIR$/DaoGenerator" />
             <option value="$PROJECT_DIR$/DaoTestGenerator" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/shinebuttonlib" />
           </set>
         </option>
       </GradleProjectSettings>
