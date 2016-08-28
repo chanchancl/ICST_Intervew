@@ -171,6 +171,7 @@ public class EditGroupActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 head = editLeader.getText().toString();
                                 headPhone = editLeaderPhone.getText().toString();
+                                show();
                             }
                         })
                         .setNegativeButton("取消", null)
