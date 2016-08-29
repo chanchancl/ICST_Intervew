@@ -62,9 +62,11 @@ public class ReadCSVThread extends Thread {
         List<Group> groups = new ArrayList<>();
         try {
             while ((line = br.readLine()) != null) {
+                //把这一行切开
                 String[] theLine = line.split(",");
                 switch (theLine[0]) {
                     case "STUDENT":
+                        //运行到这里就闪退，没有看到提示？
                         Long id = Long.getLong(theLine[S_ID]);
                         String name = theLine[S_NAME];
                         boolean gender = theLine[S_GENDER].equals("男");

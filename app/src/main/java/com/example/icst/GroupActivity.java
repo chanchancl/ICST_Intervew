@@ -60,12 +60,12 @@ public class GroupActivity extends AppCompatActivity {
         stateText = (TextView) findViewById(R.id.detail_state);
         timeText = (TextView) findViewById(R.id.timeText);
         locationText = (TextView) findViewById(R.id.locationText);
-        setTitle(Format.Department(group.getDepart(), "首轮") + " 第" + id + "组");
         //数据库相关
         session = DBUtil.getDaoSession(this);
         groupDao = session.getGroupDao();
         studentDao = session.getStudentDao();
         group = groupDao.load(id);
+        setTitle(Format.Department(group.getDepart(), "首轮") + " 第" + id + "组");
         //RecyclerView相关
         RecyclerView studentList;
         studentList = (RecyclerView) findViewById(R.id.studentRecycleView);

@@ -35,7 +35,7 @@ public class UploadThread extends Thread {
             if (size != 0) {
                 for (int x = 0; x < size - 1; x++)
                     message += Long.toHexString(students.get(x).getId()) + ",";
-                message += Long.toHexString(students.get(size - 1).getId());
+                message += Long.toHexString(students.get(size - 1).getId()) + ".";
             }
         }
         for (int i = 11; i <= 15; i++) {
@@ -47,11 +47,10 @@ public class UploadThread extends Thread {
             if (size != 0) {
                 for (int x = 0; x < size - 1; x++)
                     message += Long.toHexString(students.get(x).getId()) + ",";
-                message += Long.toHexString(students.get(size - 1).getId());
+                message += Long.toHexString(students.get(size - 1).getId()) + ".";
             }
-            if (i != 15) message += ".";
         }
-        message = message.replace(".....", "*");
+        message = message.replace(".....", ";");
         Message msg = new Message();
         msg.obj = message;
         handler.sendMessage(msg);
