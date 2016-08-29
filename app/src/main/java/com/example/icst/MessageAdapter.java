@@ -110,7 +110,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
                 final boolean[] checked = mData.get(myViewHolder.getAdapterPosition()).getChecked();
 
-                builder.setTitle("第" + _id + "组")
+                builder.setTitle(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮") + " 第" + _id + "组")
                         .setMultiChoiceItems(list, checked, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {

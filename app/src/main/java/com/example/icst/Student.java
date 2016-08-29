@@ -316,14 +316,21 @@ public class Student {
         this.Deleted = false;
         this.Signed = false;
         this.Accepted = 0;
-        //未通过 0， 第一轮通过：1-5， 第二轮通过：11-15
         this.groupId = groupId;
         this.respond = "正在读取...";
     }
 
     public boolean changeSign() {
         Signed = !Signed;
+        update();
         return Signed;
+    }
+
+    public int changeAccept() {
+        if (Accepted < 10) Accepted += 10;
+        else Accepted -= 10;
+        update();
+        return Accepted;
     }
     // KEEP METHODS END
 

@@ -8,7 +8,6 @@ import java.util.Locale;
  */
 public class Format {
     public static String Department(int department){
-        if (department>5) department -= 10;
         switch (department){
             case 1: return "人力资源部";
             case 2: return "项目运营部";
@@ -17,6 +16,23 @@ public class Format {
             case 5: return "外联交流部";
             default:
                 return "无部门";
+        }
+    }
+
+    public static String Department(int department, String string) {
+        switch (department) {
+            case 1:
+                return "人力资源部";
+            case 2:
+                return "项目运营部";
+            case 3:
+                return "资讯传媒部";
+            case 4:
+                return "知识管理部";
+            case 5:
+                return "外联交流部";
+            default:
+                return string;
         }
     }
 
@@ -125,7 +141,7 @@ public class Format {
         String[] stringList;
         if (adjust) {
             stringList = new String[]{
-                    "取消",
+                    "-取消-",
                     "人力资源部",
                     "项目运营部",
                     "资讯传媒部",

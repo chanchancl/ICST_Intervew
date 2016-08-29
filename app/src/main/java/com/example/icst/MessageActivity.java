@@ -252,7 +252,6 @@ public class MessageActivity extends AppCompatActivity {
                     handler.sendMessage(msg);
                     if (PhoneNumberUtils.isGlobalPhoneNumber(student.getPhone())) {
                         sManage = SmsManager.getDefault();
-
                         String message = messageText.getText().toString();
                         Group group = groupDao.load(student.getGroupId());
                         message = message.replace(key.get(0), student.getName());
@@ -296,7 +295,6 @@ public class MessageActivity extends AppCompatActivity {
     };
 
     public void setTextColor(CharSequence s){
-
         if (s.length()<=0) return;
         //1,查找话题
         String content = s.toString();

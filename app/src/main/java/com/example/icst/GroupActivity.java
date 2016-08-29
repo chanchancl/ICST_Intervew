@@ -60,7 +60,7 @@ public class GroupActivity extends AppCompatActivity {
         stateText = (TextView) findViewById(R.id.detail_state);
         timeText = (TextView) findViewById(R.id.timeText);
         locationText = (TextView) findViewById(R.id.locationText);
-        setTitle("第" + id + "组");
+        setTitle(Format.Department(group.getDepart(), "首轮") + " 第" + id + "组");
         //数据库相关
         session = DBUtil.getDaoSession(this);
         groupDao = session.getGroupDao();
@@ -74,7 +74,7 @@ public class GroupActivity extends AppCompatActivity {
                 .where(StudentDao.Properties.GroupId.eq(id))
                 .orderAsc(StudentDao.Properties.Id)
                 .list();
-        groupAdapter = new GroupAdapter(students, this);
+        groupAdapter = new GroupAdapter(students, this, group);
         studentList.setAdapter(groupAdapter);
         stateShow(group.getState());
         //TODO SmsObserver

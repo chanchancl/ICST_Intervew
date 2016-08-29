@@ -21,6 +21,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
     private List<Student> mData;
     private Context mContext;
+    private Group mGroup;
     int state;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -45,9 +46,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         return new MyViewHolder(v);
     }
 
-    public GroupAdapter(List<Student> data, Context context) {
+    public GroupAdapter(List<Student> data, Context context, Group group) {
         mData = data;
         mContext = context;
+        mGroup = group;
     }
 
     @Override
@@ -96,40 +98,67 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                     myViewHolder.mRespond.setText("未签到");
                     myViewHolder.mRespond.setTextColor(ContextCompat.getColor(mContext, R.color.Red));
                 }
-                if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
-                    myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
-                    myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
-                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
-                } else {
-                    myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
-                    myViewHolder.mButton.setText("通过");
-                    myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
-                }
-                myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //TODO
-                        new AlertDialog.Builder(mContext)
-                                .setTitle("选择部门")
-                                .setItems(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getWish1(),
-                                        mData.get(myViewHolder.getAdapterPosition()).getWish2(),
-                                        mData.get(myViewHolder.getAdapterPosition()).getAdjust()
-                                ), new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mData.get(myViewHolder.getAdapterPosition()).setAccepted(which);
-                                        if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
-                                            myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
-                                            myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
-                                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
-                                        } else {
-                                            myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
-                                            myViewHolder.mButton.setText("通过");
-                                            myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
-                                        }
-                                    }
-                                }).show();
+                if (mGroup.getDepart() == 0) {
+                    if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
+                        myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                        myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
+                        myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                    } else {
+                        myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                        myViewHolder.mButton.setText("通过");
+                        myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
                     }
-                });
+                    myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            new AlertDialog.Builder(mContext)
+                                    .setTitle("选择部门")
+                                    .setIcon(R.mipmap.ic_launcher)
+                                    .setItems(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getWish1(),
+                                            mData.get(myViewHolder.getAdapterPosition()).getWish2(),
+                                            mData.get(myViewHolder.getAdapterPosition()).getAdjust()
+                                    ), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mData.get(myViewHolder.getAdapterPosition()).setAccepted(which);
+                                            if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
+                                                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                                                myViewHolder.mButton.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getAccepted()));
+                                                myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                                            } else {
+                                                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                                                myViewHolder.mButton.setText("通过");
+                                                myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                                            }
+                                            mData.get(myViewHolder.getAdapterPosition()).update();
+                                        }
+                                    }).show();
+                        }
+                    });
+                } else {
+                    if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() > 10) {
+                        myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                        myViewHolder.mButton.setText("已通过");
+                        myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                    } else {
+                        myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                        myViewHolder.mButton.setText("通过");
+                        myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                    }
+                    myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mData.get(myViewHolder.getAdapterPosition()).changeAccept() > 10) {
+                                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
+                                myViewHolder.mButton.setText("已通过");
+                                myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.Gray));
+                            } else {
+                                myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white));
+                                myViewHolder.mButton.setText("通过");
+                                myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                            }
+                        }
+                    });
+                }
                 break;
         }
         myViewHolder.mName.setText(mData.get(i).getName());

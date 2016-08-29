@@ -1,9 +1,5 @@
 package com.example.icst;
 
-import android.support.annotation.Nullable;
-
-import org.greenrobot.greendao.annotation.NotNull;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,7 +13,30 @@ import java.util.List;
  */
 public class ReadCSVThread extends Thread {
 
-    int name = 1, gender = 6, photo = 5, college = 11, major = 12, phone = 7, phoneShort = 8, QQ = 9, wechat = 10, dorm = 11, adjust = 14, wish1 = 15, wish2 = 16, note = 17;
+    final static int
+            S_ID = 1,
+            S_NAME = 2,
+            S_GENDER = 3,
+            S_PHOTO = 4,
+            S_COLLEGE = 5,
+            S_MAJOR = 6,
+            S_PHONE = 7,
+            S_PHONESHORT = 8,
+            S_QQ = 9,
+            S_WECHAT = 10,
+            S_DORM = 11,
+            S_ADJUST = 12,
+            S_WISH1 = 13,
+            S_WISH2 = 14,
+            S_NOTE = 15,
+            S_GID = 16,
+            G_ID = 1,
+            G_TIME = 2,
+            G_LOCATION = 3,
+            G_HEAD = 4,
+            G_HEADPHONE = 5,
+            G_DEPART = 6;
+
     BufferedReader br;
 
     ReadCSVThread(String CSVPath) {
@@ -36,104 +55,48 @@ public class ReadCSVThread extends Thread {
         try {
             while ((line = br.readLine()) != null) {
                 String[] theLine = line.split(",");
-                if (theLine[0].equals("ID") || theLine[0].equals("id")) {
-                    for (int i = 1; i <= theLine.length; i++) {
-                        switch (theLine[i]) {
-                            case "姓名":
-                                name = i;
-                                break;
-                            case "照片(文件名称)":
-                                photo = i;
-                                break;
-                            case "性别":
-                                gender = i;
-                                break;
-                            case "手机":
-                                phone = i;
-                                break;
-                            case "手机短号":
-                                phoneShort = i;
-                                break;
-                            case "QQ":
-                                QQ = i;
-                                break;
-                            case "微信号":
-                                wechat = i;
-                                break;
-                            case "学院":
-                                college = i;
-                                break;
-                            case "专业":
-                                major = i;
-                                break;
-                            case "宿舍地址":
-                                dorm = i;
-                                break;
-                            case "服从调剂":
-                                adjust = i;
-                                break;
-                            case "意向部门(1)":
-                                wish1 = i;
-                                break;
-                            case "意向部门(2)":
-                                wish2 = i;
-                                break;
-                            case "自我介绍":
-                                note = i;
-                                break;
-                        }
-                    }
-                } else {
-                    Long id_ = Long.valueOf(theLine[0]);
-                    String name_ = "??";
-                    boolean gender_ = false;
-                    String photo_ = null;
-                    int college_ = 0;
-                    String major_ = null;
-                    String phone_ = "??";
-                    String phoneShort_ = null;
-                    String QQ_ = null;
-                    String wechat_ = null;
-                    String dorm_ = null;
-                    boolean adjust_ = false;
-                    int wish1_ = 0;
-                    int wish2_ = 0;
-                    String note_ = null;
+                switch (theLine[0]) {
+                    case "STUDENT":
+                        Long id = Long.getLong(theLine[S_ID]);
+                        String name = theLine[S_NAME];
+                        boolean gender = theLine[S_GENDER].equals("男");
+                        String photo = theLine[S_PHOTO];
+                        int college = Format.College(theLine[S_COLLEGE]);
+                        String major = theLine[S_MAJOR];
+                        String phone = theLine[S_PHONE];
+                        String phoneShort = theLine[S_PHONESHORT];
+                        String qq = theLine[S_QQ];
+                        String wechat = theLine[S_WECHAT];
+                        String dorm = theLine[S_DORM];
+                        boolean adjust = theLine[S_ADJUST].equals("是");
+                        int wish1 = Format.Department(theLine[S_WISH1]);
+                        int wish2 = Format.Department(theLine[S_WISH2]);
+                        String note = theLine[S_NOTE];
+                        long groupID = Long.getLong(theLine[S_GID]);
 
-                    name_ = theLine[name];
-                    gender_ = theLine[gender].equals("男");
-                    photo_ = theLine[photo];
-                    college_ = Format.College(theLine[college]);
-                    major_ = theLine[major];
-                    phone_ = theLine[phone];
-                    phoneShort_ = theLine[phoneShort];
-                    QQ_ = theLine[QQ];
-                    wechat_ = theLine[wechat];
-                    dorm_ = theLine[dorm];
-                    adjust_ = theLine[adjust].equals("是");
-                    wish1_ = Format.Department(theLine[wish1]);
-                    wish2_ = Format.Department(theLine[wish2]);
-                    note_ = theLine[note];
-
-                    Student student = new Student(
-                            id_,
-                            name_,
-                            gender_,
-                            photo_,
-                            college_,
-                            major_,
-                            phone_,
-                            phoneShort_,
-                            QQ_,
-                            wechat_,
-                            dorm_,
-                            adjust_,
-                            wish1_,
-                            wish2_,
-                            note_,
-                            0
-                    );
-                    students.add(student);
+                        Student student = new Student(
+                                id,
+                                name,
+                                gender,
+                                photo,
+                                college,
+                                major,
+                                phone,
+                                phoneShort,
+                                qq,
+                                wechat,
+                                dorm,
+                                adjust,
+                                wish1,
+                                wish2,
+                                note,
+                                groupID
+                        );
+                        students.add(student);
+                        break;
+                    case "GROUP":
+                        //TODO
+                        break;
                 }
             }
 
