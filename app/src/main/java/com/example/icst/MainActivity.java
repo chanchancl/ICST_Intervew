@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.action_upload).setVisible(false);
-        menu.findItem(R.id.action_import).setVisible(false);
+        SharedPreferences sp = getSharedPreferences("SP", MODE_PRIVATE);
+        menu.findItem(R.id.action_import).setVisible(sp.getString("USER", "NULL").equals("Admin"));
         mMenu = menu;
         return true;
     }
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 inputData();
                 return true;
             case R.id.action_upload:
-                progressDialog.setProgressStyle(progressDialog.STYLE_SPINNER);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setMessage("正在加载数据...");
                 progressDialog.show();
                 final Handler handler = new Handler() {
@@ -162,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
             Student std = new Student(i, "大帅编", true, null, 1, "机卓", "15918991022", "", "1191740498", "sheep10", "北八404", true, 3, 2, "", g);
             studentDao.insert(std);
         }
+        SharedPreferences sp = getSharedPreferences("SP", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("USER", "Admin");
+        editor.putBoolean("ROUND", false);
+        editor.apply();
     }
 
     private void setContentMain(boolean empty) {
