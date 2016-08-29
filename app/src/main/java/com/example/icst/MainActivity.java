@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("SP", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        editor.putString("USER", "NULL");
-        editor.putBoolean("ROUND", false);
         editor.apply();
 
         //这个是toolbar
@@ -115,16 +113,16 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        final ProgressDialog progressDialog = new ProgressDialog(this);
 
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
                 return true;
             case R.id.action_import:
-                inputData();
+                //TODO
                 return true;
             case R.id.action_upload:
+                final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setMessage("正在加载数据...");
                 progressDialog.show();
