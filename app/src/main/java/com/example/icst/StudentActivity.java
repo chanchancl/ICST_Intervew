@@ -1,8 +1,14 @@
 package com.example.icst;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +21,10 @@ import android.widget.Toast;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class StudentActivity extends AppCompatActivity {
 
@@ -30,6 +40,7 @@ public class StudentActivity extends AppCompatActivity {
     private LinearLayout QQLayout;
     private TextView QQText;
     private LinearLayout weChatLayout;
+    private CollapsingToolbarLayout toolbarLayout;
     private TextView weChatText;
     private TextView collegeText;
     private TextView majorText;
@@ -37,6 +48,9 @@ public class StudentActivity extends AppCompatActivity {
     private TextView wishText;
     private TextView adjustText;
     private TextView noteText;
+    private Uri imageUri; //图片路径
+
+    public static final int TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +58,10 @@ public class StudentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        long id = intent.getLongExtra(GroupAdapter.STUDENT_ID, -1);
+        final long id = intent.getLongExtra(GroupAdapter.STUDENT_ID, -1);
 
         session = DBUtil.getDaoSession(this);
         studentDao = session.getStudentDao();
@@ -72,7 +86,7 @@ public class StudentActivity extends AppCompatActivity {
         wishText = (TextView) findViewById(R.id.wishText);
         adjustText = (TextView) findViewById(R.id.adjustText);
         noteText = (TextView) findViewById(R.id.noteText);
-
+        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
         phoneText.setText(student.getPhone());
         weChatText.setText(student.getWechat());
@@ -124,9 +138,51 @@ public class StudentActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String filePath = "Student" + Long.toString(id) + ".jpg";
+                if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File outputImage = new File(dir, filePath);
+                    try {
+                        if (outputImage.exists()) {
+                            outputImage.delete();
+                        }
+                        outputImage.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //将File对象转换为Uri并启动照相程序
+
+                    Intent intent = new Intent();
+                    // 指定开启系统相机的Action
+                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    // 把文件地址转换成Uri格式
+                    Uri uri = Uri.fromFile(outputImage);
+                    // 设置系统相机拍摄照片完成后图片文件的存放地址
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    intent.putExtra("filePath", filePath);
+                    startActivityForResult(intent, 0);
+                    //拍完照startActivityForResult() 结果返回onActivityResult()函数
+                }
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        student.setPhoto("Student" + Long.toString(student.getId()) + ".jpg");
+        student.update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (student.getPhoto() == null) return;
+        Bitmap bitmap = BitmapFactory.decodeFile
+                (getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                        + student.getPhoto());
+        BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), bitmap);
+        toolbarLayout.setBackground(actionBarBackground);
     }
 
     @Override

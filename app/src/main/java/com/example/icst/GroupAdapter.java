@@ -3,6 +3,11 @@ package com.example.icst;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
@@ -170,6 +178,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
+        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto() != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile
+                    (mContext.getExternalFilesDir(
+                            Environment.DIRECTORY_PICTURES) +
+                            mData.get(myViewHolder.getAdapterPosition()).getPhoto());
+            myViewHolder.mPhoto.setImageBitmap(bitmap);
+        }
         /*
         myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){
             @Override

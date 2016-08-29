@@ -1,12 +1,20 @@
 package com.example.icst;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +26,8 @@ import java.util.Locale;
  * Created by 大杨编 on 2016/8/28.
  */
 public class ReadCSVThread extends Thread {
+
+    Context mContext;
 
     final static int
             S_ID = 1,
@@ -58,6 +68,7 @@ public class ReadCSVThread extends Thread {
     @Override
     public void run() {
         String line;
+        Bitmap mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_delete);
         List<Student> students = new ArrayList<>();
         List<Group> groups = new ArrayList<>();
         try {
@@ -66,7 +77,7 @@ public class ReadCSVThread extends Thread {
                 String[] theLine = line.split(",");
                 switch (theLine[0]) {
                     case "STUDENT":
-                        //运行到这里就闪退，没有看到提示？
+                        //TODO 运行到这里就闪退，没有看到提示？
                         Long id = Long.getLong(theLine[S_ID]);
                         String name = theLine[S_NAME];
                         boolean gender = theLine[S_GENDER].equals("男");
@@ -83,7 +94,31 @@ public class ReadCSVThread extends Thread {
                         int wish2 = Format.Department(theLine[S_WISH2]);
                         String note = theLine[S_NOTE];
                         long groupID = Long.getLong(theLine[S_GID]);
+                        //下载图片
+                        try {
+                            URL url = new URL("http://files.jsform.com/" + photo);
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                            conn.setConnectTimeout(6000);
+                            conn.setRequestMethod("GET");
+                            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                                mBitmap = BitmapFactory.decodeStream(conn.getInputStream());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
+                        //保存图片
+                        try {
+                            photo = Long.toString(id);
+                            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), photo);
+                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                            mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+                            bos.flush();
+                            bos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+//TODO
                         Student student = new Student(
                                 id,
                                 name,
