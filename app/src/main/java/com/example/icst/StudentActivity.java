@@ -146,6 +146,7 @@ public class StudentActivity extends AppCompatActivity {
                         == PackageManager.PERMISSION_GRANTED &&
                         ContextCompat.checkSelfPermission(StudentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 == PackageManager.PERMISSION_GRANTED) {
+                    //TODO
                     String filePath = "Student" + Long.toString(id) + ".jpg";
                     if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
                         File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);

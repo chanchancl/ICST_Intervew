@@ -68,7 +68,7 @@ public class ReadCSVThread extends Thread {
     @Override
     public void run() {
         String line;
-        Bitmap mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_delete);
+        Bitmap mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_student);
         List<Student> students = new ArrayList<>();
         List<Group> groups = new ArrayList<>();
         try {
