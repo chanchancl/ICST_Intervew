@@ -1,6 +1,8 @@
 package com.example.icst;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +35,6 @@ import java.util.List;
 
 public class GroupActivity extends AppCompatActivity {
 
-    private Paint p;
     private Group group;
     private List<Student> students = new ArrayList<>();
     private TextView stateText, timeText, locationText;
@@ -77,11 +80,22 @@ public class GroupActivity extends AppCompatActivity {
         groupAdapter = new GroupAdapter(students, this, group);
         studentList.setAdapter(groupAdapter);
         stateShow(group.getState());
-        //TODO SmsObserver
-        smsContentObserver = new SMSContentObserver(this, handler, students);
-        Uri SMS_INBOX = Uri.parse("content://sms/");
-        getContentResolver().registerContentObserver(SMS_INBOX, true, smsContentObserver);
-        smsContentObserver.onChange(false);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+                == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
+                        == PackageManager.PERMISSION_GRANTED) {
+            smsContentObserver = new SMSContentObserver(this, handler, students);
+            Uri SMS_INBOX = Uri.parse("content://sms/");
+            getContentResolver().registerContentObserver(SMS_INBOX, true, smsContentObserver);
+            smsContentObserver.onChange(false);
+        } else {
+            new AlertDialog.Builder(GroupActivity.this)
+                    .setTitle("缺少权限")
+                    .setIcon(R.drawable.ic_warning)
+                    .setMessage("需要接收和读取短信的权限")
+                    .setPositiveButton("确定", null)
+                    .show();
+        }
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 

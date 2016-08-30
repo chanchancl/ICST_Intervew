@@ -202,8 +202,9 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 else{
                     new AlertDialog.Builder(MessageActivity.this)
-                            .setTitle("没有发短信的权限")
-                            .setMessage("手动再见")
+                            .setTitle("缺少权限")
+                            .setIcon(R.drawable.ic_warning)
+                            .setMessage("需要发送短信的权限")
                             .setPositiveButton("确定",null)
                             .show();
                 }
@@ -263,9 +264,7 @@ public class MessageActivity extends AppCompatActivity {
 
                         //因为一条短信有字数限制，因此要将长短信拆分
                         ArrayList<String> messageParts = sManage.divideMessage(message);
-                        for (String text : messageParts) {
-                            sManage.sendTextMessage(student.getPhone(), null, text, null, null);
-                        }
+                        sManage.sendMultipartTextMessage(student.getPhone(), null, messageParts, null, null);
                     }
                 }
                 Message msg = new Message();
