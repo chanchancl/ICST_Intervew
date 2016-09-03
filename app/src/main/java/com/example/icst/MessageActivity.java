@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
@@ -58,6 +59,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final int DONE=1;
     private List<Student> studentList;
     private ProgressDialog progressDialog;
+    private SharedPreferences sharedPreferences;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -86,10 +88,20 @@ public class MessageActivity extends AppCompatActivity {
         RecyclerView chooseRec = (RecyclerView) findViewById(R.id.studentRecycleView);
 
         //数据库相关
+        sharedPreferences = getSharedPreferences("SP", MODE_PRIVATE);
+        String user = sharedPreferences.getString("USER", "NULL");
         session = DBUtil.getDaoSession(this);
         groupDao = session.getGroupDao();
-        groupQuery = groupDao.queryBuilder().orderAsc(GroupDao.Properties.Id).build();
-
+        if (user.equals("Admin")) {
+            groupQuery = groupDao.queryBuilder()
+                    .orderAsc(GroupDao.Properties.Id)
+                    .build();
+        } else {
+            groupQuery = groupDao.queryBuilder()
+                    .where(GroupDao.Properties.Head.eq(user))
+                    .orderAsc(GroupDao.Properties.Id)
+                    .build();
+        }
         messageAdapter = new MessageAdapter(groupQuery.list(),this);
         chooseRec.setAdapter(messageAdapter);
         chooseRec.setLayoutManager(new LinearLayoutManager(this));
@@ -119,7 +131,6 @@ public class MessageActivity extends AppCompatActivity {
         messageText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.i("MainActivity", "onKey");
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
 
                     int selectionStart = messageText.getSelectionStart();

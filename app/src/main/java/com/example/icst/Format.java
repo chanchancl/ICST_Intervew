@@ -218,12 +218,17 @@ public class Format {
                     "外联交流部"
             };
             stringList[wish1] += "(第一志愿)";
-            stringList[wish2] += "(第二志愿)";
+            if (wish2 != 0) stringList[wish2] += "(第二志愿)";
         } else {
+            if (wish2 != 0)
             stringList = new String[]{
                     "取消",
                     Format.Department(wish1) + "(第一志愿)",
                     Format.Department(wish2) + "(第二志愿)"
+            };
+            else stringList = new String[]{
+                    "取消",
+                    Format.Department(wish1) + "(第一志愿)",
             };
         }
         return stringList;

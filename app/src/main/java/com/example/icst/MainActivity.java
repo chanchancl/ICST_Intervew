@@ -1,5 +1,6 @@
 package com.example.icst;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -7,11 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,6 +40,7 @@ import com.example.icst.dao.GroupDao;
 import com.example.icst.dao.StudentDao;
 
 import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
 import java.util.Date;
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private MainAdapter mainAdapter;
     private Menu mMenu;
     private SharedPreferences sharedPreferences;
+    public final int REQUEST_CODE_ASK_PERMISSIONS = 1;
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
 
     @Override
@@ -78,19 +85,60 @@ public class MainActivity extends AppCompatActivity {
         studentDao = session.getStudentDao();
 
         //这个是要读取csv文件
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         String action = intent.getAction();
 
         if (Intent.ACTION_VIEW.equals(action)) {
-            Uri uri = intent.getData();
-            ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setTitle("读取数据");
-            progressDialog.show();
-            ReadCSVThread thread = new ReadCSVThread(uri.getPath(), this);
-            thread.start();
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //这是Handler 结尾处理UI的
+                Handler handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                        View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
+                        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
+                        final String[] userList = (String[]) msg.obj;
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,
+                                android.R.layout.simple_dropdown_item_1line, userList);
+                        //设置AutoCompleteTextView的Adapter
+                        autoCompleteTextView.setAdapter(adapter);
+                        new AlertDialog.Builder(MainActivity.this).setView(layout)
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        SharedPreferences.Editor edit = sharedPreferences.edit();
+                                        edit.putString("USER", autoCompleteTextView.getText().toString());
+                                        edit.apply();
+                                    }
+                                });
+                    }
+                };
+                Uri uri = intent.getData();
+                ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setTitle("读取数据");
+                progressDialog.show();
+                ReadCSVThread thread = new ReadCSVThread(uri.getPath(), MainActivity.this, MainActivity.this, handler);
+                thread.start();
+            } else {
+                //没有权限
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("缺少权限")
+                        .setIcon(R.drawable.ic_warning)
+                        .setMessage("需要读取存储的权限")
+                        .setPositiveButton("确定", null)
+                        .show();
+            }
         }
         setContentMain(groupDao.count() == 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mainAdapter == null) return;
+        mainAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -108,13 +156,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (groupDao == null || groupDao.count() == 0) return true;
         //菜单按钮
-        Boolean admin = sharedPreferences.getString("USER", "NULL").equals("Admin"),
-                state = groupDao.count() != 0 &&
-                        groupDao.queryBuilder()
-                                .where(GroupDao.Properties.State.notEq(2))
-                                .count() == 0;
-        mMenu.findItem(R.id.action_upload).setVisible((!admin) && state);
-        mMenu.findItem(R.id.action_round).setVisible(admin && state);
+        String user = sharedPreferences.getString("USER", "NULL");
+
+        QueryBuilder qb = groupDao.queryBuilder();
+        qb.where(qb.and(GroupDao.Properties.Head.eq(user), GroupDao.Properties.State.notEq(2)));
+
+        QueryBuilder qbAdmin = groupDao.queryBuilder();
+        qbAdmin.where(GroupDao.Properties.State.notEq(2));
+
+        Boolean admin = user.equals("Admin");
+
+        mMenu.findItem(R.id.action_upload).setVisible((!admin) && groupDao.count() != 0 && qb.count() == 0);
+        mMenu.findItem(R.id.action_round).setVisible(admin && groupDao.count() != 0 && qbAdmin.count() == 0);
         mMenu.findItem(R.id.action_import).setVisible(admin);
         if (sharedPreferences.getInt("ROUND", 1) == 1)
             mMenu.findItem(R.id.action_round).setTitle("进入第二轮");
@@ -175,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 };
                                 new ReadUploadThread(MainActivity.this, handler1, str).start();
+                                mainAdapter.notifyDataSetChanged();
                             }
                         })
                         .setNegativeButton("取消", null)
@@ -328,8 +382,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ;
-
     private void inputData() {
         Date date = new Date(116, 8, 17, 12, 00);
         for (int i = 1; i <= 7; i++) {
@@ -341,8 +393,7 @@ public class MainActivity extends AppCompatActivity {
             Student std = new Student(i, "大帅编", true, null, 1, "机卓", "15918991022", "", "1191740498", "sheep10", "北八404", true, 3, 2, "", g);
             studentDao.insert(std);
         }
-        SharedPreferences.Editor editor;
-        editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("USER", "Admin");
         editor.putInt("ROUND", 1);
         editor.apply();
@@ -372,7 +423,17 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout show = (LinearLayout) findViewById(R.id.emptyShow);
             show.setVisibility(View.GONE);
             //获取RecyclerView
-            groupQuery = groupDao.queryBuilder().orderAsc(GroupDao.Properties.Id).build();
+            String user = sharedPreferences.getString("USER", "NULL");
+            if (user.equals("Admin")) {
+                groupQuery = groupDao.queryBuilder()
+                        .orderAsc(GroupDao.Properties.Id)
+                        .build();
+            } else {
+                groupQuery = groupDao.queryBuilder()
+                        .where(GroupDao.Properties.Head.eq(user))
+                        .orderAsc(GroupDao.Properties.Id)
+                        .build();
+            }
             RecyclerView groupList = (RecyclerView) findViewById(R.id.groupRecycleView);
             groupList.setLayoutManager(new LinearLayoutManager(this));
             mainAdapter = new MainAdapter(groupQuery.list(), this);
