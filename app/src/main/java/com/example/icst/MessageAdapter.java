@@ -84,7 +84,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     @Override
     public void onBindViewHolder(final MyViewHolder myViewHolder,int i) {
         final long _id = mData.get(myViewHolder.getAdapterPosition()).getId();
-        myViewHolder.titleText.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮") + " 第" + _id + "组");
+        myViewHolder.titleText.setText("第" + _id + "组 - " + Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮"));
         myViewHolder.timeText.setText(mData.get(myViewHolder.getAdapterPosition()).getTimes() + ", " + mData.get(myViewHolder.getAdapterPosition()).getLocation());
         myViewHolder.leaderText.setText(mData.get(myViewHolder.getAdapterPosition()).getHead() + ", " + mData.get(myViewHolder.getAdapterPosition()).getHeadPhone());
         int number = mData.get(myViewHolder.getAdapterPosition()).numOfChecked();

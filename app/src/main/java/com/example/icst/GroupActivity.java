@@ -68,7 +68,7 @@ public class GroupActivity extends AppCompatActivity {
         groupDao = session.getGroupDao();
         studentDao = session.getStudentDao();
         group = groupDao.load(id);
-        setTitle(Format.Department(group.getDepart(), "首轮") + " 第" + id + "组");
+        setTitle("第" + id + "组 - " + Format.Department(group.getDepart(), "首轮"));
         //RecyclerView相关
         RecyclerView studentList;
         studentList = (RecyclerView) findViewById(R.id.studentRecycleView);

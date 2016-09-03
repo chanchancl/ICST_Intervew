@@ -1,10 +1,15 @@
 package com.example.icst;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
+
+import com.example.icst.dao.DaoSession;
+import com.example.icst.dao.GroupDao;
+import com.example.icst.dao.StudentDao;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -13,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -27,7 +34,12 @@ import java.util.Locale;
  */
 public class ReadCSVThread extends Thread {
 
-    Context mContext;
+    private DaoSession session;
+    private GroupDao groupDao;
+    private StudentDao studentDao;
+    private String CSVPath;
+    private Context context;
+    private AssetManager assetManager;
 
     final static int
             S_ID = 1,
@@ -56,28 +68,30 @@ public class ReadCSVThread extends Thread {
 
     BufferedReader br;
 
-    ReadCSVThread(String CSVPath) {
-        File csv = new File(CSVPath);
-        try {
-            br = new BufferedReader(new FileReader(csv));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    ReadCSVThread(String CSVPath, Context context) {
+        assetManager = context.getAssets();
+        this.CSVPath = CSVPath;
+        this.context = context;
     }
 
     @Override
     public void run() {
+        session = DBUtil.getDaoSession(context);
+        groupDao = session.getGroupDao();
+        studentDao = session.getStudentDao();
+        groupDao.deleteAll();
+        studentDao.deleteAll();
         String line;
-        Bitmap mBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_student);
-        List<Student> students = new ArrayList<>();
-        List<Group> groups = new ArrayList<>();
+        Bitmap mBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_student);
         try {
+            InputStream csvStream = assetManager.open(CSVPath);
+            InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
+            br = new BufferedReader(csvStreamReader);
             while ((line = br.readLine()) != null) {
                 //把这一行切开
                 String[] theLine = line.split(",");
                 switch (theLine[0]) {
                     case "STUDENT":
-                        //TODO 运行到这里就闪退，没有看到提示？
                         Long id = Long.getLong(theLine[S_ID]);
                         String name = theLine[S_NAME];
                         boolean gender = theLine[S_GENDER].equals("男");
@@ -118,7 +132,7 @@ public class ReadCSVThread extends Thread {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-//TODO
+                        //TODO
                         Student student = new Student(
                                 id,
                                 name,
@@ -137,7 +151,7 @@ public class ReadCSVThread extends Thread {
                                 note,
                                 groupID
                         );
-                        students.add(student);
+                        studentDao.insert(student);
                         break;
                     case "GROUP":
                         //TODO
@@ -154,7 +168,7 @@ public class ReadCSVThread extends Thread {
                         int depart = Integer.getInteger(theLine[G_DEPART]);
 
                         Group group = new Group(g_id, time, location, head, headPhone, depart);
-                        groups.add(group);
+                        groupDao.insert(group);
                         break;
                 }
             }

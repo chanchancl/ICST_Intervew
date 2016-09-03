@@ -5,14 +5,20 @@
 
     <item
         android:id="@+id/action_upload"
-        android:title="上传数据"
         android:icon="@drawable/ic_upload"
+        android:title="上传数据"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_import"
+        android:icon="@drawable/ic_download"
         android:title="导入数据"
-        android:icon="@drawable/ic_input"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_round"
+        android:icon="@drawable/ic_two"
+        android:title="进入第二轮"
         app:showAsAction="never" />
 
     <item

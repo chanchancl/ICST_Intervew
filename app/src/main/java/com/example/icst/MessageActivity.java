@@ -258,7 +258,7 @@ public class MessageActivity extends AppCompatActivity {
                         message = message.replace(key.get(0), student.getName());
                         message = message.replace(key.get(1), group.getTimes());
                         message = message.replace(key.get(2), group.getLocation());
-                        message = message.replace(key.get(3), "部门");
+                        message = message.replace(key.get(3), Format.Department(group.getDepart()));
                         message = message.replace(key.get(4), group.getHead());
                         message = message.replace(key.get(5), group.getHeadPhone());
 

@@ -29,7 +29,7 @@ public class UploadThread extends Thread {
     @Override
     public void run() {
         String message = "";
-        if (sp.getBoolean("ROUND", false)) {
+        if (sp.getInt("ROUND", 1) == 1) {
             for (int i = 1; i <= 5; i++) {
                 List<Student> students = studentDao.queryBuilder()
                         .where(StudentDao.Properties.Accepted.eq(i))
@@ -55,7 +55,7 @@ public class UploadThread extends Thread {
                         message += Long.toHexString(students.get(x).getId()) + ",";
                     message += Long.toHexString(students.get(size - 1).getId());
                 }
-                if (i != 5) message += ".";
+                if (i != 5) message += "-";
             }
         }
         Message msg = new Message();

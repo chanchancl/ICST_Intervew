@@ -50,7 +50,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder>{
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int i) {
         final long id = mData.get(i).getId();
-        myViewHolder.mTitle.setText(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮") + " 第" + id + "组");
+        myViewHolder.mTitle.setText("第" + id + "组 - " + Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮"));
         myViewHolder.mTime.setText(mData.get(i).getTimes());
         myViewHolder.mLocation.setText(mData.get(i).getLocation());
         myViewHolder.mState.setText(Format.State(mData.get(i).getState()));
