@@ -227,6 +227,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void send_messages() {
         progressDialog = new ProgressDialog(MessageActivity.this);
+        progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setTitle("正在发送");
         progressDialog.setMessage("加载到"+studentList.size()+"条数据");
@@ -276,6 +277,11 @@ public class MessageActivity extends AppCompatActivity {
                         //因为一条短信有字数限制，因此要将长短信拆分
                         ArrayList<String> messageParts = sManage.divideMessage(message);
                         sManage.sendMultipartTextMessage(student.getPhone(), null, messageParts, null, null);
+                        try {
+                            Thread.sleep(6000);
+                        } catch (InterruptedException e) {
+                            Log.d("错误", "信息发送被终止");
+                        }
                     }
                 }
                 Message msg = new Message();

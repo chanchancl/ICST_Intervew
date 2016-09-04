@@ -43,8 +43,8 @@ public class SMSContentObserver extends ContentObserver {
 
                     Cursor cursor = mContext.getContentResolver().query(
                             SMSUri,
-                            new String[]{"address", "body", "type", "date"},
-                            "address='" + students.get(i).getPhone() + "' AND type=1",
+                            new String[]{"address", "body", "date"},
+                            "address='" + students.get(i).getPhone() + "'",
                             null,
                             "date desc");
 
@@ -57,10 +57,27 @@ public class SMSContentObserver extends ContentObserver {
                         mHandler.sendMessage(msg);
                         cursor.close();
                     } else {
-                        msg = new Message();
-                        msg.obj = "（未回复）";
-                        msg.arg1 = i;
-                        mHandler.sendMessage(msg);
+                        cursor = mContext.getContentResolver().query(
+                                SMSUri,
+                                new String[]{"address", "body", "date"},
+                                "address='+86" + students.get(i).getPhone() + "'",
+                                null,
+                                "date desc");
+
+                        if (cursor != null && cursor.moveToFirst()) {
+                            msg = new Message();
+                            String msgBody = cursor.getString(cursor.getColumnIndex("body"));
+                            if (msgBody.length() > 12) msg.obj = msgBody.substring(0, 10) + "...";
+                            else msg.obj = msgBody;
+                            msg.arg1 = i;
+                            mHandler.sendMessage(msg);
+                            cursor.close();
+                        } else {
+                            msg = new Message();
+                            msg.obj = "（未回复）";
+                            msg.arg1 = i;
+                            mHandler.sendMessage(msg);
+                        }
                     }
                 }
             }

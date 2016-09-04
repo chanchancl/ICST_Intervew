@@ -42,7 +42,7 @@ import com.example.icst.dao.StudentDao;
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -87,10 +87,15 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(action)) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
+                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setMessage("读取数据...");
                 //这是Handler 结尾处理UI的
                 Handler handler = new Handler() {
                     @Override
                     public void handleMessage(Message msg) {
+                        progressDialog.dismiss();
                         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                         View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
                         final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
@@ -106,14 +111,12 @@ public class MainActivity extends AppCompatActivity {
                                         SharedPreferences.Editor edit = sharedPreferences.edit();
                                         edit.putString("USER", autoCompleteTextView.getText().toString());
                                         edit.apply();
+                                        setContentMain();
                                     }
-                                });
+                                }).show();
                     }
                 };
                 Uri uri = intent.getData();
-                ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setTitle("读取数据");
                 progressDialog.show();
                 ReadCSVThread thread = new ReadCSVThread(uri.getPath(), MainActivity.this, MainActivity.this, handler);
                 thread.start();
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         }
-        setContentMain(groupDao.count() == 0);
+        setContentMain();
     }
 
     @Override
@@ -152,13 +155,13 @@ public class MainActivity extends AppCompatActivity {
         QueryBuilder qb = groupDao.queryBuilder();
         qb.where(qb.and(GroupDao.Properties.Head.eq(user), GroupDao.Properties.State.notEq(2)));
 
-        QueryBuilder qbAdmin = groupDao.queryBuilder();
-        qbAdmin.where(GroupDao.Properties.State.notEq(2));
-
         Boolean admin = user.equals("Admin");
 
         mMenu.findItem(R.id.action_upload).setVisible((!admin) && groupDao.count() != 0 && qb.count() == 0);
-        mMenu.findItem(R.id.action_round).setVisible(admin && groupDao.count() != 0 && qbAdmin.count() == 0);
+        mMenu.findItem(R.id.action_round).setVisible(admin && groupDao.count() != 0 &&
+                groupDao.queryBuilder().
+                        where(GroupDao.Properties.State.notEq(2)).
+                        count() == 0);
         mMenu.findItem(R.id.action_import).setVisible(admin);
         if (sharedPreferences.getInt("ROUND", 1) == 1)
             mMenu.findItem(R.id.action_round).setTitle("进入第二轮");
@@ -172,10 +175,38 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+        View layout;
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
+                layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
+                final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
+                List<String> users = new ArrayList<>();
+                List<Group> groupQuery = groupDao.queryBuilder()
+                        .orderAsc(GroupDao.Properties.Id)
+                        .list();
+                for (Group group :
+                        groupQuery) {
+                    if (!users.contains(group.getHead())) users.add(group.getHead());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, users);
+                //设置AutoCompleteTextView的Adapter
+                autoCompleteTextView.setAdapter(adapter);
+                autoCompleteTextView.setText(sharedPreferences.getString("USER", "NULL"));
+                new AlertDialog.Builder(MainActivity.this).setView(layout)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SharedPreferences.Editor edit = sharedPreferences.edit();
+                                edit.putString("USER", autoCompleteTextView.getText().toString());
+                                edit.apply();
+                                setContentMain();
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
                 return true;
             case R.id.action_import:
                 ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -259,8 +290,7 @@ public class MainActivity extends AppCompatActivity {
                                 .where(StudentDao.Properties.Accepted.eq(i))
                                 .count();
                     }
-                    LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-                    View layout = inflater.inflate(R.layout.dialog_import1, (ViewGroup) findViewById(R.id.linearLayout));
+                    layout = inflater.inflate(R.layout.dialog_import1, (ViewGroup) findViewById(R.id.linearLayout));
 
                     final TextView totalText1 = (TextView) layout.findViewById(R.id.totalText1);
                     final TextView totalText2 = (TextView) layout.findViewById(R.id.totalText2);
@@ -390,14 +420,14 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void setContentMain(boolean empty) {
-        if (empty) {
+    private void setContentMain() {
+        if (groupDao.count() == 0) {
             final Button buttonImport = (Button) findViewById(R.id.buttonImport);
             buttonImport.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     inputData();
-                    setContentMain(groupDao.count() == 0);
+                    setContentMain();
                 }
             });
         } else {

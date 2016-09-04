@@ -122,31 +122,32 @@ public class ReadCSVThread extends Thread {
                         String note = theLine[S_NOTE];
                         long groupID = Long.parseLong(theLine[S_GID]);
 
-                        /*
-                        //下载图片
-                        try {
-                            URL url = new URL("http://files.jsform.com/" + photo);
-                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                            conn.setConnectTimeout(6000);
-                            conn.setRequestMethod("GET");
-                            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                                mBitmap = BitmapFactory.decodeStream(conn.getInputStream());
+                        if (!photo.isEmpty()) {
+                            //下载图片
+                            try {
+                                URL url = new URL("http://files.jsform.com/" + photo);
+                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                                conn.setConnectTimeout(6000);
+                                conn.setRequestMethod("GET");
+                                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                                    mBitmap = BitmapFactory.decodeStream(conn.getInputStream());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            //保存图片
+                            try {
+                                File file = new File(context.getExternalFilesDir(
+                                        Environment.DIRECTORY_PICTURES), photo);
+                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                                mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+                                bos.flush();
+                                bos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        //保存图片
-                        try {
-                            photo = Long.toString(id);
-                            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), photo);
-                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                            mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-                            bos.flush();
-                            bos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        */
+
                         studentDao.insert(new Student(
                                 id,
                                 name,
@@ -182,6 +183,8 @@ public class ReadCSVThread extends Thread {
                             e.printStackTrace();
                         }
                         break;
+                    default:
+                        Log.d(theLine[0], "读取失败");
                 }
             }
             try {

@@ -178,12 +178,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto() != null) {
+        if (!mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) {
             Bitmap bitmap = BitmapFactory.decodeFile
                     (mContext.getExternalFilesDir(
                             Environment.DIRECTORY_PICTURES) +
                             mData.get(myViewHolder.getAdapterPosition()).getPhoto());
-            myViewHolder.mPhoto.setImageBitmap(bitmap);
+            if (bitmap != null) myViewHolder.mPhoto.setImageBitmap(bitmap);
         }
         /*
         myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){

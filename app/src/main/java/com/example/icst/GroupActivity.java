@@ -42,7 +42,6 @@ public class GroupActivity extends AppCompatActivity {
     private DaoSession session;
     private GroupDao groupDao;
     private StudentDao studentDao;
-    private Query<Group> groupQuery;
     private GroupAdapter groupAdapter;
     private SMSContentObserver smsContentObserver;
     public final static String EXTRA_MESSAGE = "com.example.icst.MESSAGE";
@@ -188,9 +187,6 @@ public class GroupActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_MESSAGE, group.getId());
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                return true;
-            case android.R.id.home:
-                this.finish();
                 return true;
         }
 

@@ -117,7 +117,7 @@ public class Format {
             case 28:
                 return "国际教育学院";
             default:
-                return "**学院**";
+                return "（未填）";
         }
     }
 
@@ -210,7 +210,7 @@ public class Format {
         String[] stringList;
         if (adjust) {
             stringList = new String[]{
-                    "-取消-",
+                    "取消",
                     "人力资源部",
                     "项目运营部",
                     "资讯传媒部",
