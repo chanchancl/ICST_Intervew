@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -19,9 +18,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
@@ -178,18 +174,17 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (!mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) {
-            Bitmap bitmap = BitmapFactory.decodeFile
-                    (mData.get(myViewHolder.getAdapterPosition()).getPhoto());
-            if (bitmap != null) {
-                new ImageZipThread(bitmap, new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        Bitmap mBitmap = (Bitmap) msg.obj;
-                        myViewHolder.mPhoto.setImageBitmap(mBitmap);
-                    }
-                }).start();
-            }
+        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) return;
+        Bitmap bitmap = BitmapFactory.decodeFile
+                (mData.get(myViewHolder.getAdapterPosition()).getPhoto());
+        if (bitmap != null) {
+            new ImageZipThread(bitmap, new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    Bitmap mBitmap = (Bitmap) msg.obj;
+                    myViewHolder.mPhoto.setImageBitmap(mBitmap);
+                }
+            }).start();
         }
         /*
         myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){

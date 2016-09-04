@@ -124,7 +124,7 @@ public class StudentActivity extends AppCompatActivity {
             shortPhoneLayout.setVisibility(View.GONE);
         }
 
-        if (student.getQQ() != null) {
+        if (student.getQQ() != null && !student.getQQ().isEmpty()) {
             QQText.setText(student.getQQ());
             QQLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
