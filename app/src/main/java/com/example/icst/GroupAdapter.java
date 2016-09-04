@@ -175,9 +175,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
             }
         });
         if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) return;
+
+        //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
         Bitmap bitmap = BitmapFactory.decodeFile
                 (mData.get(myViewHolder.getAdapterPosition()).getPhoto());
         if (bitmap != null) {
+            //TODO 这里是一个压缩图片的Thread !!
             new ImageZipThread(bitmap, new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
@@ -186,6 +189,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 }
             }).start();
         }
+        //TODO 加一个像微信那样点头像会放大的功能！
         /*
         myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){
             @Override
