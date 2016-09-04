@@ -65,6 +65,7 @@ public class ReadCSVThread extends Thread {
             G_HEADPHONE = 5,
             G_DEPART = 6;
 
+
     String path;
     Context context;
     Activity activity;
@@ -73,6 +74,7 @@ public class ReadCSVThread extends Thread {
     Bitmap mBitmap;
     Handler handler;
     List<String> users = new ArrayList<>();
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     boolean round1 = true;
 
     ReadCSVThread(String CSVPath, Context context, Activity activity, Handler handler) {
@@ -101,7 +103,6 @@ public class ReadCSVThread extends Thread {
         try {
             while ((line = br.readLine()) != null) {
                 String[] theLine = line.split(",");
-                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA);
                 switch (theLine[0]) {
                     case "STUDENT":
                         Long id = Long.parseLong(theLine[S_ID]);
@@ -120,7 +121,8 @@ public class ReadCSVThread extends Thread {
                         int wish2 = Format.Department(theLine[S_WISH2]);
                         String note = theLine[S_NOTE];
                         long groupID = Long.parseLong(theLine[S_GID]);
-                        
+
+                        /*
                         //下载图片
                         try {
                             URL url = new URL("http://files.jsform.com/" + photo);
@@ -144,6 +146,7 @@ public class ReadCSVThread extends Thread {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        */
                         studentDao.insert(new Student(
                                 id,
                                 name,
@@ -188,7 +191,9 @@ public class ReadCSVThread extends Thread {
             }
 
             Message msg = new Message();
-            msg.obj = users.toArray();
+            String[] message = new String[users.size()];
+            message = users.toArray(message);
+            msg.obj = message;
             handler.sendMessage(msg);
             
         } catch (FileNotFoundException e) {
