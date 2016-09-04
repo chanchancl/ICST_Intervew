@@ -180,10 +180,16 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         });
         if (!mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) {
             Bitmap bitmap = BitmapFactory.decodeFile
-                    (mContext.getExternalFilesDir(
-                            Environment.DIRECTORY_PICTURES) +
-                            mData.get(myViewHolder.getAdapterPosition()).getPhoto());
-            if (bitmap != null) myViewHolder.mPhoto.setImageBitmap(bitmap);
+                    (mData.get(myViewHolder.getAdapterPosition()).getPhoto());
+            if (bitmap != null) {
+                new ImageZipThread(bitmap, new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        Bitmap mBitmap = (Bitmap) msg.obj;
+                        myViewHolder.mPhoto.setImageBitmap(mBitmap);
+                    }
+                }).start();
+            }
         }
         /*
         myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){

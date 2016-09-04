@@ -169,7 +169,7 @@ public class StudentActivity extends AppCompatActivity {
                         Uri uri = Uri.fromFile(outputImage);
                         // 设置系统相机拍摄照片完成后图片文件的存放地址
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                        intent.putExtra("filePath", filePath);
+                        intent.putExtra("filePath", outputImage.getPath());
                         startActivityForResult(intent, 0);
                         //拍完照startActivityForResult() 结果返回onActivityResult()函数
                     }
@@ -195,9 +195,7 @@ public class StudentActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (student.getPhoto() == null) return;
-        Bitmap bitmap = BitmapFactory.decodeFile
-                (getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                        + student.getPhoto());
+        Bitmap bitmap = BitmapFactory.decodeFile(student.getPhoto());
         BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), bitmap);
         toolbarLayout.setBackground(actionBarBackground);
     }

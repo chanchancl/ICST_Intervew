@@ -141,6 +141,7 @@ public class ReadCSVThread extends Thread {
                                         Environment.DIRECTORY_PICTURES), photo);
                                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
                                 mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+                                photo = file.getPath();
                                 bos.flush();
                                 bos.close();
                             } catch (IOException e) {
