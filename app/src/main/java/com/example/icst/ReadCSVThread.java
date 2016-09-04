@@ -65,7 +65,6 @@ public class ReadCSVThread extends Thread {
             G_HEADPHONE = 5,
             G_DEPART = 6;
 
-    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
     String path;
     Context context;
     Activity activity;
@@ -102,7 +101,7 @@ public class ReadCSVThread extends Thread {
         try {
             while ((line = br.readLine()) != null) {
                 String[] theLine = line.split(",");
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.CHINA);
                 switch (theLine[0]) {
                     case "STUDENT":
                         Long id = Long.parseLong(theLine[S_ID]);

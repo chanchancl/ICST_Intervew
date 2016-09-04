@@ -53,13 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private GroupDao groupDao;
     private StudentDao studentDao;
     private Query<Group> groupQuery;
-    private File csv;
-    private Thread thread;
-    private Intent intent;
     private MainAdapter mainAdapter;
     private Menu mMenu;
     private SharedPreferences sharedPreferences;
-    public final int REQUEST_CODE_ASK_PERMISSIONS = 1;
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
 
     @Override
@@ -149,11 +145,6 @@ public class MainActivity extends AppCompatActivity {
         menu.findItem(R.id.action_import).setVisible(false);
         menu.findItem(R.id.action_round).setVisible(false);
         mMenu = menu;
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
         if (groupDao == null || groupDao.count() == 0) return true;
         //菜单按钮
         String user = sharedPreferences.getString("USER", "NULL");
