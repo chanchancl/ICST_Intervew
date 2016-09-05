@@ -14,10 +14,12 @@ import java.io.ByteArrayOutputStream;
 public class ImageZipThread extends Thread {
 
     public Bitmap image;
+    public int i;
     public Handler handler;
 
-    public ImageZipThread(Bitmap image, Handler handler) {
-        this.image = image;
+    public ImageZipThread(String path, int i, Handler handler) {
+        this.image = BitmapFactory.decodeFile(path);
+        this.i = i;
         this.handler = handler;
     }
 
@@ -55,6 +57,7 @@ public class ImageZipThread extends Thread {
         bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
         Message message = new Message();
         message.obj = compressImage(bitmap);
+        message.what = i;
         handler.sendMessage(message);
     }
 

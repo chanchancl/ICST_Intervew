@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -57,7 +56,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder myViewHolder, int i) {
+    public void onBindViewHolder(final MyViewHolder myViewHolder, final int i) {
         final long id = mData.get(i).getId();
         switch (state) {
             case 0:
@@ -174,20 +173,22 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) return;
-
-        //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
-        Bitmap bitmap = BitmapFactory.decodeFile
-                (mData.get(myViewHolder.getAdapterPosition()).getPhoto());
-        if (bitmap != null) {
-            //TODO 这里是一个压缩图片的Thread !!
-            new ImageZipThread(bitmap, new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    Bitmap mBitmap = (Bitmap) msg.obj;
-                    myViewHolder.mPhoto.setImageBitmap(mBitmap);
-                }
-            }).start();
+        if (!mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) {
+            if (mData.get(myViewHolder.getAdapterPosition()).bitmap != null)
+                myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
+            else {
+                //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
+                new ImageZipThread(mData.get(myViewHolder.getAdapterPosition()).getPhoto(), myViewHolder.getAdapterPosition(), new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        int position = msg.what;
+                        if (position != myViewHolder.getAdapterPosition()) return;
+                        Bitmap mBitmap = (Bitmap) msg.obj;
+                        mData.get(position).bitmap = mBitmap;
+                        myViewHolder.mPhoto.setImageBitmap(mBitmap);
+                    }
+                }).start();
+            }
         }
         //TODO 加一个像微信那样点头像会放大的功能！
         /*
