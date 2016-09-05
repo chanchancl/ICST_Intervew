@@ -173,22 +173,21 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (!mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) {
-            if (mData.get(myViewHolder.getAdapterPosition()).bitmap != null)
-                myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
-            else {
-                //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
-                new ImageZipThread(mData.get(myViewHolder.getAdapterPosition()).getPhoto(), myViewHolder.getAdapterPosition(), new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        int position = msg.what;
-                        if (position != myViewHolder.getAdapterPosition()) return;
-                        Bitmap mBitmap = (Bitmap) msg.obj;
-                        mData.get(position).bitmap = mBitmap;
-                        myViewHolder.mPhoto.setImageBitmap(mBitmap);
-                    }
-                }).start();
-            }
+        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) return;
+        if (mData.get(myViewHolder.getAdapterPosition()).bitmap != null)
+            myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
+        else {
+            //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
+            new ImageZipThread(mData.get(myViewHolder.getAdapterPosition()).getPhoto(), myViewHolder.getAdapterPosition(), new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    int position = msg.what;
+                    if (position != myViewHolder.getAdapterPosition()) return;
+                    Bitmap mBitmap = (Bitmap) msg.obj;
+                    mData.get(position).bitmap = mBitmap;
+                    myViewHolder.mPhoto.setImageBitmap(mBitmap);
+                }
+            }).start();
         }
         //TODO 加一个像微信那样点头像会放大的功能！
         /*
