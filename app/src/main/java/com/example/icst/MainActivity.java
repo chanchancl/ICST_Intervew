@@ -87,39 +87,56 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(action)) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setCancelable(false);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setMessage("读取数据...");
-                //这是Handler 结尾处理UI的
-                Handler handler = new Handler() {
-                    @Override
-                    public void handleMessage(Message msg) {
-                        progressDialog.dismiss();
-                        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-                        View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
-                        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
-                        final String[] userList = (String[]) msg.obj;
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,
-                                android.R.layout.simple_dropdown_item_1line, userList);
-                        //设置AutoCompleteTextView的Adapter
-                        autoCompleteTextView.setAdapter(adapter);
-                        new AlertDialog.Builder(MainActivity.this).setView(layout)
-                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("读取数据")
+                        .setIcon(R.drawable.ic_warning)
+                        .setMessage("现有数据将被删除且无法恢复，确定继续？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                                progressDialog.setCancelable(false);
+                                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                progressDialog.setMessage("读取数据...");
+                                //这是Handler 结尾处理UI的
+                                Handler handler = new Handler() {
                                     @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        SharedPreferences.Editor edit = sharedPreferences.edit();
-                                        edit.putString("USER", autoCompleteTextView.getText().toString());
-                                        edit.apply();
-                                        setContentMain();
+                                    public void handleMessage(Message msg) {
+                                        if (msg.what == 1) {
+                                            progressDialog.setMessage((String) msg.obj);
+                                            return;
+                                        }
+                                        progressDialog.dismiss();
+                                        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                                        View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
+                                        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
+                                        final String[] userList = (String[]) msg.obj;
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this,
+                                                android.R.layout.simple_dropdown_item_1line, userList);
+                                        //设置AutoCompleteTextView的Adapter
+                                        autoCompleteTextView.setAdapter(adapter);
+                                        new AlertDialog.Builder(MainActivity.this).setView(layout)
+                                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        SharedPreferences.Editor edit = sharedPreferences.edit();
+                                                        edit.putString("USER", autoCompleteTextView.getText().toString());
+                                                        edit.apply();
+                                                        setContentMain();
+                                                    }
+                                                }).show();
                                     }
-                                }).show();
-                    }
-                };
-                Uri uri = intent.getData();
-                progressDialog.show();
-                ReadCSVThread thread = new ReadCSVThread(uri.getPath(), MainActivity.this, MainActivity.this, handler);
-                thread.start();
+                                };
+                                Uri uri = intent.getData();
+                                progressDialog.show();
+                                ReadCSVThread thread = new ReadCSVThread(uri.getPath(), MainActivity.this, MainActivity.this, handler);
+                                thread.start();
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
             } else {
                 //没有权限
                 new AlertDialog.Builder(MainActivity.this)

@@ -76,6 +76,7 @@ public class ReadCSVThread extends Thread {
     List<String> users = new ArrayList<>();
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     boolean round1 = true;
+    Message msg;
 
     ReadCSVThread(String CSVPath, Context context, Activity activity, Handler handler) {
         path = CSVPath;
@@ -121,6 +122,11 @@ public class ReadCSVThread extends Thread {
                         int wish2 = Format.Department(theLine[S_WISH2]);
                         String note = theLine[S_NOTE];
                         long groupID = Long.parseLong(theLine[S_GID]);
+
+                        msg = new Message();
+                        msg.what = 1;
+                        msg.obj = name;
+                        handler.sendMessage(msg);
 
                         if (!photo.isEmpty()) {
                             //下载图片
@@ -180,6 +186,10 @@ public class ReadCSVThread extends Thread {
                                     theLine[G_HEADPHONE],
                                     Format.Department(theLine[G_DEPART])
                             ));
+                            msg = new Message();
+                            msg.what = 1;
+                            msg.obj = "正在分组...";
+                            handler.sendMessage(msg);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -194,9 +204,11 @@ public class ReadCSVThread extends Thread {
                 e.printStackTrace();
             }
 
-            Message msg = new Message();
             String[] message = new String[users.size()];
             message = users.toArray(message);
+
+            msg = new Message();
+            msg.what = 0;
             msg.obj = message;
             handler.sendMessage(msg);
             

@@ -336,6 +336,15 @@ public class Student {
         update();
         return Accepted;
     }
+
+    public void acceptWish1() {
+        Accepted = Wish1;
+    }
+
+
+    public void acceptWish2() {
+        Accepted = Wish2;
+    }
     // KEEP METHODS END
 
 }
