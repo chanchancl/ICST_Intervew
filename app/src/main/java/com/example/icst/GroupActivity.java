@@ -28,8 +28,6 @@ import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.GroupDao;
 import com.example.icst.dao.StudentDao;
 
-import org.greenrobot.greendao.query.Query;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +42,7 @@ public class GroupActivity extends AppCompatActivity {
     private StudentDao studentDao;
     private GroupAdapter groupAdapter;
     private SMSContentObserver smsContentObserver;
+    private ImageZipThread imageZipThread;
     public final static String EXTRA_MESSAGE = "com.example.icst.MESSAGE";
 
     @Override
@@ -92,6 +91,19 @@ public class GroupActivity extends AppCompatActivity {
                     .setTitle("缺少权限")
                     .setIcon(R.drawable.ic_warning)
                     .setMessage("需要接收和读取短信的权限")
+                    .setPositiveButton("确定", null)
+                    .show();
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            imageZipThread = new ImageZipThread(this, handler, students);
+            imageZipThread.start();
+        } else {
+            new AlertDialog.Builder(GroupActivity.this)
+                    .setTitle("缺少权限")
+                    .setIcon(R.drawable.ic_warning)
+                    .setMessage("需要读取存储的权限")
                     .setPositiveButton("确定", null)
                     .show();
         }
@@ -196,7 +208,14 @@ public class GroupActivity extends AppCompatActivity {
     final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            groupAdapter.setRespond(msg.arg1, (String) msg.obj);
+            switch (msg.what) {
+                case 0:
+                    groupAdapter.setRespond(msg.arg1, (String) msg.obj);
+                    break;
+                case 1:
+                    groupAdapter.setBitmap(msg.arg1, (Bitmap) msg.obj);
+                    break;
+            }
         }
     };
 }

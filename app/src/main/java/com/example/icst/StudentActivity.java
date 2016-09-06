@@ -1,34 +1,25 @@
 package com.example.icst;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class StudentActivity extends AppCompatActivity {
 
@@ -105,12 +96,12 @@ public class StudentActivity extends AppCompatActivity {
         phoneLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = Uri.parse("tel:"+student.getPhone());
+                Uri uri = Uri.parse("tel:" + student.getPhone());
                 startActivity(new Intent(Intent.ACTION_DIAL, uri));
             }
         });
 
-        if (student.getPhoneShort() != null) {
+        if (student.getPhoneShort() != null && student.getPhoneShort().length() >= 5) {
             shortPhoneText.setText(student.getPhoneShort());
             shortPhoneLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,22 +110,20 @@ public class StudentActivity extends AppCompatActivity {
                     startActivity(new Intent(Intent.ACTION_DIAL, uri));
                 }
             });
-        }
-        else{
+        } else {
             shortPhoneLayout.setVisibility(View.GONE);
         }
 
-        if (student.getQQ() != null && !student.getQQ().isEmpty()) {
+        if (student.getQQ() != null && student.getQQ().length() >= 5) {
             QQText.setText(student.getQQ());
             QQLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Uri uri=Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+student.getQQ());
+                    Uri uri = Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=" + student.getQQ());
                     startActivity(new Intent(Intent.ACTION_VIEW, uri));
                 }
             });
-        }
-        else{
+        } else {
             QQLayout.setVisibility(View.GONE);
         }
 
@@ -142,62 +131,25 @@ public class StudentActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(StudentActivity.this, Manifest.permission.READ_SMS)
-                        == PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(StudentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED) {
-                    //TODO
-                    String filePath = "Student" + Long.toString(id) + ".jpg";
-                    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-                        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                        File outputImage = new File(dir, filePath);
-                        try {
-                            if (outputImage.exists()) {
-                                outputImage.delete();
-                            }
-                            outputImage.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //将File对象转换为Uri并启动照相程序
-
-                        Intent intent = new Intent();
-                        // 指定开启系统相机的Action
-                        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                        intent.addCategory(Intent.CATEGORY_DEFAULT);
-                        // 把文件地址转换成Uri格式
-                        Uri uri = Uri.fromFile(outputImage);
-                        // 设置系统相机拍摄照片完成后图片文件的存放地址
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                        intent.putExtra("filePath", outputImage.getPath());
-                        startActivityForResult(intent, 0);
-                        //拍完照startActivityForResult() 结果返回onActivityResult()函数
-                    }
-                } else {
-                    new AlertDialog.Builder(StudentActivity.this)
-                            .setTitle("缺少权限")
-                            .setIcon(R.drawable.ic_warning)
-                            .setMessage("需要相机和存储权限")
-                            .setPositiveButton("确定", null)
-                            .show();
-                }
+                new AlertDialog.Builder(StudentActivity.this)
+                        .setTitle("功能取消")
+                        .setIcon(R.drawable.ic_warning)
+                        .setMessage("英明神武的大杨编并不喜欢这个功能。")
+                        .setPositiveButton("确定", null)
+                        .show();
             }
         });
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        student.setPhoto("Student" + Long.toString(student.getId()) + ".jpg");
-        student.update();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (student.getPhoto() == null) return;
-        Bitmap bitmap = BitmapFactory.decodeFile(student.getPhoto());
-        BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), bitmap);
-        toolbarLayout.setBackground(actionBarBackground);
+        if (student.getPhoto() == null || student.getPhoto().isEmpty()) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = ImageZipThread.compressImage(BitmapFactory.decodeFile(student.getPhoto()), 1080f, 180f, 1000);
+                Message msg = new Message();
+                msg.obj = bitmap;
+                handler.sendMessage(msg);
+            }
+        }).start();
     }
 
     @Override
@@ -215,4 +167,12 @@ public class StudentActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), (Bitmap) msg.obj);
+            toolbarLayout.setBackground(actionBarBackground);
+        }
+    };
 }

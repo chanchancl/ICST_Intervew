@@ -50,6 +50,7 @@ public class SMSContentObserver extends ContentObserver {
 
                     if (cursor != null && cursor.moveToFirst()) {
                         msg = new Message();
+                        msg.what = 0;
                         String msgBody = cursor.getString(cursor.getColumnIndex("body"));
                         if (msgBody.length() > 12) msg.obj = msgBody.substring(0, 10) + "...";
                         else msg.obj = msgBody;
@@ -66,6 +67,7 @@ public class SMSContentObserver extends ContentObserver {
 
                         if (cursor != null && cursor.moveToFirst()) {
                             msg = new Message();
+                            msg.what = 0;
                             String msgBody = cursor.getString(cursor.getColumnIndex("body"));
                             if (msgBody.length() > 12) msg.obj = msgBody.substring(0, 10) + "...";
                             else msg.obj = msgBody;
@@ -74,6 +76,7 @@ public class SMSContentObserver extends ContentObserver {
                             cursor.close();
                         } else {
                             msg = new Message();
+                            msg.what = 0;
                             msg.obj = "（未回复）";
                             msg.arg1 = i;
                             mHandler.sendMessage(msg);

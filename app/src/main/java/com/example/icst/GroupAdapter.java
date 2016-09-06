@@ -111,17 +111,18 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                         myViewHolder.mButton.setText("通过");
                         myViewHolder.mButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
                     }
+                    final String[] items = Format.Department(mData.get(myViewHolder.getAdapterPosition()).getWish1(),
+                            mData.get(myViewHolder.getAdapterPosition()).getWish2(),
+                            mData.get(myViewHolder.getAdapterPosition()).getAdjust());
                     myViewHolder.mButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             new AlertDialog.Builder(mContext)
                                     .setTitle("选择部门")
                                     .setIcon(R.mipmap.ic_launcher)
-                                    .setItems(Format.Department(mData.get(myViewHolder.getAdapterPosition()).getWish1(),
-                                            mData.get(myViewHolder.getAdapterPosition()).getWish2(),
-                                            mData.get(myViewHolder.getAdapterPosition()).getAdjust()
-                                    ), new DialogInterface.OnClickListener() {
+                                    .setItems(items, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
+                                            //TODO
                                             mData.get(myViewHolder.getAdapterPosition()).setAccepted(which);
                                             if (mData.get(myViewHolder.getAdapterPosition()).getAccepted() != 0) {
                                                 myViewHolder.mLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.WhitePurple));
@@ -173,76 +174,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty()) return;
-        if (mData.get(myViewHolder.getAdapterPosition()).bitmap != null)
-            myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
-        else {
-            //TODO !!! 这种处理方法有很多问题 !!! 首先是很卡 !!! 然后图片会错位 !!! 可能跟Thread有关
-            new ImageZipThread(mData.get(myViewHolder.getAdapterPosition()).getPhoto(), myViewHolder.getAdapterPosition(), new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    int position = msg.what;
-                    if (position != myViewHolder.getAdapterPosition()) return;
-                    Bitmap mBitmap = (Bitmap) msg.obj;
-                    mData.get(position).bitmap = mBitmap;
-                    myViewHolder.mPhoto.setImageBitmap(mBitmap);
-                }
-            }).start();
-        }
-        //TODO 加一个像微信那样点头像会放大的功能！
-        /*
-        myViewHolder.buttonControl.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //    通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                //    设置Title的内容
-                builder.setTitle("这么早就说支持？");
-                //    设置Content来显示一个信息
-                builder.setMessage("会不会给人一种内定、钦点的感觉？");
-                //    设置一个PositiveButton
-                builder.setPositiveButton("支持", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                    }
-                });
-                //    设置一个NegativeButton
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                    }
-                });
-                //    显示出该对话框
-                builder.show();
-                mData.get(i).change(state);
-                notifyDataSetChanged();
-            }
-        });
-
-        if (mData.get(i).getState(state)) myViewHolder.mLayout.setBackgroundColor(Color.argb(100,189,189,189));
-        else myViewHolder.mLayout.setBackgroundColor(Color.WHITE);
-
-        switch (state){
-            case 0:
-                if (mData.get(i).getState(0)) myViewHolder.buttonControl.setText("不支持");
-                else myViewHolder.buttonControl.setText("支持");
-                return;
-            case 1:
-                if (mData.get(i).getState(1)) myViewHolder.buttonControl.setText("取消");
-                else myViewHolder.buttonControl.setText("签到");
-                return;
-            case 2:
-                if (mData.get(i).getState(2)) myViewHolder.buttonControl.setText("取消");
-                else myViewHolder.buttonControl.setText("通过");
-                return;
-            default:
-                myViewHolder.buttonControl.setText("？？");
-                return;
-        }*/
+        myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
     }
 
     @Override
@@ -265,4 +197,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         mData.get(position).respond = respond;
         notifyItemChanged(position);
     }
+
+    public void setBitmap(int position, Bitmap bitmap) {
+        mData.get(position).bitmap = bitmap;
+        notifyItemChanged(position);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.icst;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -7,30 +8,43 @@ import android.os.Message;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 /**
  * Created by 大杨编 on 2016/9/4.
  */
 public class ImageZipThread extends Thread {
+    private Context context;
+    private Handler handler;
+    private List<Student> students;
 
-    public Bitmap image;
-    public int i;
-    public Handler handler;
-
-    public ImageZipThread(String path, int i, Handler handler) {
-        this.image = BitmapFactory.decodeFile(path);
-        this.i = i;
+    public ImageZipThread(Context context, Handler handler, List<Student> students) {
+        this.context = context;
         this.handler = handler;
+        this.students = students;
     }
 
     @Override
     public void run() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-        if (baos.toByteArray().length / 1024 > 1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
-            baos.reset();//重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, 50, baos);//这里压缩50%，把压缩后的数据存放到baos中
+        for (int i = 0; i < students.size(); i++) {
+            String filePath = students.get(i).getPhoto();
+            Message message = new Message();
+            message.what = 1;
+            message.arg1 = i;
+            if (filePath != null && !filePath.isEmpty()) {
+                message.obj = compressImage(BitmapFactory.decodeFile(filePath), 100f, 100f, 10);
+            } else {
+                message.obj = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_student);
+            }
+            handler.sendMessage(message);
         }
+    }
+
+    public static Bitmap compressImage(Bitmap image, float hh, float ww, int size) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(); //初始化
+        image.compress(Bitmap.CompressFormat.JPEG, 50, baos); //统一压缩并获取baos
+        int quality = 10240 / baos.toByteArray().length;
+        image.compress(Bitmap.CompressFormat.JPEG, quality, baos);
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
         //开始读入图片，此时把options.inJustDecodeBounds 设回true了
@@ -39,9 +53,6 @@ public class ImageZipThread extends Thread {
         newOpts.inJustDecodeBounds = false;
         int w = newOpts.outWidth;
         int h = newOpts.outHeight;
-        //现在主流手机比较多是800*480分辨率，所以高和宽我们设置为
-        float hh = 100f;//这里设置高度为800f
-        float ww = 100f;//这里设置宽度为480f
         //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
         int be = 1;//be=1表示不缩放
         if (w > h && w > ww) {//如果宽度大的话根据宽度固定大小缩放
@@ -55,25 +66,11 @@ public class ImageZipThread extends Thread {
         //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
         isBm = new ByteArrayInputStream(baos.toByteArray());
         bitmap = BitmapFactory.decodeStream(isBm, null, newOpts);
-        Message message = new Message();
-        message.obj = compressImage(bitmap);
-        message.what = i;
-        handler.sendMessage(message);
-    }
-
-    private Bitmap compressImage(Bitmap image) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-            options -= 25;//每次都减少25
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
-        return bitmap;
+        if (size == 1000) return bitmap;
+        baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos);
+        isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+        return BitmapFactory.decodeStream(isBm, null, null);
     }
 
 }

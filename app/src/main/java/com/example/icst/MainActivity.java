@@ -136,20 +136,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (mainAdapter == null) return;
-        mainAdapter.notifyDataSetChanged();
-    }
+        if (mainAdapter != null)
+            mainAdapter.notifyDataSetChanged();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.findItem(R.id.action_upload).setVisible(false);
-        menu.findItem(R.id.action_import).setVisible(false);
-        menu.findItem(R.id.action_round).setVisible(false);
-        mMenu = menu;
-        if (groupDao == null || groupDao.count() == 0) return true;
+        if (groupDao == null) return;
+        setContentMain();
         //菜单按钮
+        if (mMenu == null) return;
         String user = sharedPreferences.getString("USER", "NULL");
 
         QueryBuilder qb = groupDao.queryBuilder();
@@ -166,6 +159,16 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPreferences.getInt("ROUND", 1) == 1)
             mMenu.findItem(R.id.action_round).setTitle("进入第二轮");
         else mMenu.findItem(R.id.action_round).setTitle("最终名单");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_upload).setVisible(false);
+        menu.findItem(R.id.action_import).setVisible(false);
+        menu.findItem(R.id.action_round).setVisible(false);
+        mMenu = menu;
         return true;
     }
 
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                                 SharedPreferences.Editor edit = sharedPreferences.edit();
                                 edit.putString("USER", autoCompleteTextView.getText().toString());
                                 edit.apply();
-                                setContentMain();
+                                onResume();
                             }
                         })
                         .setNegativeButton("取消", null)
