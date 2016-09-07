@@ -42,7 +42,6 @@ public class GroupActivity extends AppCompatActivity {
     private StudentDao studentDao;
     private GroupAdapter groupAdapter;
     private SMSContentObserver smsContentObserver;
-    private ImageZipThread imageZipThread;
     public final static String EXTRA_MESSAGE = "com.example.icst.MESSAGE";
 
     @Override
@@ -71,10 +70,12 @@ public class GroupActivity extends AppCompatActivity {
         RecyclerView studentList;
         studentList = (RecyclerView) findViewById(R.id.studentRecycleView);
         studentList.setLayoutManager(new LinearLayoutManager(this));
+
         students = studentDao.queryBuilder()
                 .where(StudentDao.Properties.GroupId.eq(id))
                 .orderAsc(StudentDao.Properties.Id)
                 .list();
+
         groupAdapter = new GroupAdapter(students, this, group);
         studentList.setAdapter(groupAdapter);
         stateShow(group.getState());
@@ -97,8 +98,7 @@ public class GroupActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            imageZipThread = new ImageZipThread(this, handler, students);
-            imageZipThread.start();
+
         } else {
             new AlertDialog.Builder(GroupActivity.this)
                     .setTitle("缺少权限")
@@ -211,9 +211,6 @@ public class GroupActivity extends AppCompatActivity {
             switch (msg.what) {
                 case 0:
                     groupAdapter.setRespond(msg.arg1, (String) msg.obj);
-                    break;
-                case 1:
-                    groupAdapter.setBitmap(msg.arg1, (Bitmap) msg.obj);
                     break;
             }
         }

@@ -2,7 +2,6 @@ package com.example.icst;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -20,8 +18,10 @@ import android.widget.TextView;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 
 public class StudentActivity extends AppCompatActivity {
 
@@ -145,7 +145,13 @@ public class StudentActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Bitmap bitmap = ImageZipThread.compressImage(BitmapFactory.decodeFile(student.getPhoto()), 1080f, 180f, 1000);
+                String filePath = StudentActivity.this.getFilesDir() + "/original/" + student.getPhoto();
+                Bitmap bitmap = null;
+                try {
+                    bitmap = Picasso.with(StudentActivity.this).load(new File(filePath)).get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 Message msg = new Message();
                 msg.obj = bitmap;
                 handler.sendMessage(msg);
@@ -172,7 +178,26 @@ public class StudentActivity extends AppCompatActivity {
     final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), (Bitmap) msg.obj);
+            int width = toolbarLayout.getWidth();
+            int height = toolbarLayout.getHeight();
+            float scale = 1.0f * width / height;
+            Bitmap bitmap = (Bitmap) msg.obj;
+            int w = bitmap.getWidth();
+            int h = bitmap.getHeight();
+            float scaleBitmap = 1.0f * w / h;
+            int retX = 0;
+            int retY = 0;
+            if(scale > scaleBitmap) {
+                retY = (int) (h - (w / scale))/2;
+                h = (int) (w / scale);
+            } else {
+                retX = (int) (w - (h * scale))/2;
+                w = (int) (h * scale);
+            }
+
+            Bitmap mBitmap = Bitmap.createBitmap(bitmap, retX, retY, w, h, null, false);
+            bitmap.recycle();
+            BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(),mBitmap);
             toolbarLayout.setBackground(actionBarBackground);
         }
     };
