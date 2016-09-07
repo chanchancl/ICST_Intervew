@@ -3,7 +3,6 @@ package com.example.icst;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.List;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
@@ -186,7 +188,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        myViewHolder.mPhoto.setImageBitmap(mData.get(myViewHolder.getAdapterPosition()).bitmap);
+        String filePath = mContext.getFilesDir() + "/thumbnail/" + mData.get(i).getPhoto();
+        Object tag = new Object();
+        if(mData.get(i).getPhoto().compareTo("") != 0) {
+            Picasso.with(mContext).load(new File(filePath)).tag(tag).into(myViewHolder.mPhoto);
+        } else {
+            Picasso.with(mContext).load(R.drawable.ic_student).tag(tag).into(myViewHolder.mPhoto);
+        }
     }
 
     @Override
@@ -210,9 +218,5 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         notifyItemChanged(position);
     }
 
-    public void setBitmap(int position, Bitmap bitmap) {
-        mData.get(position).bitmap = bitmap;
-        notifyItemChanged(position);
-    }
 
 }

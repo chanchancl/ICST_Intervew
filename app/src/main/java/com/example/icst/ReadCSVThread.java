@@ -1,22 +1,16 @@
 package com.example.icst;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.GroupDao;
 import com.example.icst.dao.StudentDao;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -25,15 +19,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.Buffer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
 
 /**
  * Created by 大杨编 on 2016/8/28.
@@ -131,25 +122,47 @@ public class ReadCSVThread extends Thread {
                         if (!photo.isEmpty()) {
                             //下载图片
                             try {
-                                URL url = new URL("http://files.jsform.com/" + photo);
-                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                conn.setConnectTimeout(6000);
-                                conn.setRequestMethod("GET");
-                                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                                    mBitmap = BitmapFactory.decodeStream(conn.getInputStream());
-                                }
+                                mBitmap = Picasso.with(context)
+                                        .load("http://files.jsform.com/" + photo)
+                                        .resize(100, 100)
+                                        .centerCrop()
+                                        .get();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             //保存图片
                             try {
-                                File file = new File(context.getExternalFilesDir(
-                                        Environment.DIRECTORY_PICTURES), photo);
-                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                                mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-                                photo = file.getPath();
-                                bos.flush();
-                                bos.close();
+                                File thumbnailDir = new File(context.getFilesDir() + "/thumbnail");
+                                File originalDir = new File(context.getFilesDir() + "/original");
+                                if(!thumbnailDir.exists())
+                                    if(thumbnailDir.mkdirs())
+                                        Log.i("Create Dir","Success");
+                                    else
+                                        Log.e("Create Dir","Fail");
+                                if(!originalDir.exists())
+                                    if(originalDir.mkdirs())
+                                        Log.i("Create Dir","Success");
+                                    else
+                                        Log.e("Create Dir","Fail");
+                                File thumbnail = new File(thumbnailDir.getPath(), photo);
+                                File original = new File(originalDir.getPath(), photo);
+                                BufferedOutputStream thumbnailBos = new BufferedOutputStream(new FileOutputStream(thumbnail));
+                                BufferedOutputStream originalBos = new BufferedOutputStream(new FileOutputStream(original));
+                                Picasso.with(context)
+                                        .load("http://files.jsform.com/" + photo)
+                                        .resize(100, 100)
+                                        .centerCrop()
+                                        .get()
+                                        .compress(Bitmap.CompressFormat.JPEG, 80, thumbnailBos);
+                                Picasso.with(context)
+                                        .load("http://files.jsform.com/" + photo)
+                                        .get()
+                                        .compress(Bitmap.CompressFormat.JPEG, 80, originalBos);
+
+                                thumbnailBos.flush();
+                                thumbnailBos.close();
+                                originalBos.flush();
+                                originalBos.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
