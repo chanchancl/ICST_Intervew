@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
 
+import java.io.File;
+
 public class StudentActivity extends AppCompatActivity {
 
     Student student;
@@ -131,12 +133,11 @@ public class StudentActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(StudentActivity.this)
-                        .setTitle("功能取消")
-                        .setIcon(R.drawable.ic_warning)
-                        .setMessage("英明神武的大杨编并不喜欢这个功能。")
-                        .setPositiveButton("确定", null)
-                        .show();
+                if (student.getPhoto().isEmpty()) return;
+                File file = new File(student.getPhoto());
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(file), "image/*");
+                startActivity(intent);
             }
         });
 

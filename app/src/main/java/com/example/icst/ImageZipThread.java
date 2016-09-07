@@ -43,7 +43,8 @@ public class ImageZipThread extends Thread {
     public static Bitmap compressImage(Bitmap image, float hh, float ww, int size) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(); //初始化
         image.compress(Bitmap.CompressFormat.JPEG, 50, baos); //统一压缩并获取baos
-        int quality = 10240 / baos.toByteArray().length;
+        if (baos.toByteArray().length < 10000) return image;
+        int quality = 10000 / baos.toByteArray().length;
         image.compress(Bitmap.CompressFormat.JPEG, quality, baos);
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
         BitmapFactory.Options newOpts = new BitmapFactory.Options();
@@ -60,8 +61,7 @@ public class ImageZipThread extends Thread {
         } else if (w < h && h > hh) {//如果高度高的话根据宽度固定大小缩放
             be = (int) (newOpts.outHeight / hh);
         }
-        if (be <= 0)
-            be = 1;
+        if (be <= 0) be = 1;
         newOpts.inSampleSize = be;//设置缩放比例
         //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
         isBm = new ByteArrayInputStream(baos.toByteArray());
