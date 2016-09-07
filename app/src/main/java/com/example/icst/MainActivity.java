@@ -362,10 +362,10 @@ public class MainActivity extends AppCompatActivity {
                                     if (groupsNum[3] <= 1 || groupsNum[3] > total[3]) return;
                                     if (groupsNum[4] <= 1 || groupsNum[4] > total[4]) return;
 
-                                    new GenerateDataThread(MainActivity.this, groupsNum).start();
                                     SharedPreferences.Editor edit = sharedPreferences.edit();
                                     edit.putInt("ROUND", 2);
                                     edit.apply();
+                                    new GenerateDataThread(MainActivity.this, groupsNum).start();
                                     mainAdapter.notifyDataSetChanged();
                                 }
                             })
@@ -423,34 +423,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void inputData() {
-        Date date = new Date(116, 8, 17, 12, 00);
-        for (int i = 1; i <= 7; i++) {
-            Group grp = new Group(i, date, "A4-201", "杨编", "13265940755", 0);
-            groupDao.insert(grp);
-        }
-        for (int i = 1; i <= 70; i++) {
-            int g = i % 7 + 1;
-            Student std = new Student(i, "大帅编", true, null, 1, "机卓", "15918991022", "", "1191740498", "sheep10", "北八404", true, 3, 2, "", g);
-            studentDao.insert(std);
-        }
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER", "Admin");
-        editor.putInt("ROUND", 1);
-        editor.apply();
-    }
-
     private void setContentMain() {
-        if (groupDao.count() == 0) {
-            final Button buttonImport = (Button) findViewById(R.id.buttonImport);
-            buttonImport.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    inputData();
-                    setContentMain();
-                }
-            });
-        } else {
+        if (groupDao.count() != 0) {
             fab.setVisibility(View.VISIBLE);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override

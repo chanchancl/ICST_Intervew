@@ -109,7 +109,8 @@ public class ReadCSVThread extends Thread {
                         Long id = Long.parseLong(theLine[S_ID]);
                         String name = theLine[S_NAME];
                         boolean gender = theLine[S_GENDER].equals("男");
-                        String photo = theLine[S_PHOTO] + theLine[S_PHOTOTYPE];
+                        String originalPhoto = theLine[S_PHOTO] + theLine[S_PHOTOTYPE];
+                        String photo = "";
                         int college = Format.College(theLine[S_COLLEGE]);
                         String major = theLine[S_MAJOR];
                         String phone = theLine[S_PHONE];
@@ -128,10 +129,10 @@ public class ReadCSVThread extends Thread {
                         msg.obj = name;
                         handler.sendMessage(msg);
 
-                        if (!photo.isEmpty()) {
+                        if (!originalPhoto.isEmpty()) {
                             //下载图片
                             try {
-                                URL url = new URL("http://files.jsform.com/" + photo);
+                                URL url = new URL("http://files.jsform.com/" + originalPhoto);
                                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                                 conn.setConnectTimeout(6000);
                                 conn.setRequestMethod("GET");
@@ -144,7 +145,7 @@ public class ReadCSVThread extends Thread {
                             //保存图片
                             try {
                                 File file = new File(context.getExternalFilesDir(
-                                        Environment.DIRECTORY_PICTURES), photo);
+                                        Environment.DIRECTORY_PICTURES), originalPhoto);
                                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
                                 mBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
                                 photo = file.getPath();
@@ -159,6 +160,7 @@ public class ReadCSVThread extends Thread {
                                 id,
                                 name,
                                 gender,
+                                originalPhoto,
                                 photo,
                                 college,
                                 major,
@@ -184,7 +186,7 @@ public class ReadCSVThread extends Thread {
                                     theLine[G_LOCATION],
                                     theLine[G_HEAD],
                                     theLine[G_HEADPHONE],
-                                    Format.Department(theLine[G_DEPART])
+                                    Integer.parseInt(theLine[G_DEPART])
                             ));
                             msg = new Message();
                             msg.what = 1;

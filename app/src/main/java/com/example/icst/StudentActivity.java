@@ -2,17 +2,17 @@ package com.example.icst;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 
@@ -140,8 +142,31 @@ public class StudentActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+/*
         if (student.getPhoto() == null || student.getPhoto().isEmpty()) return;
+
+        Picasso.with(this)
+                .load(new File(student.getPhoto()))
+                .resize(270, 168)
+                .centerCrop()
+                .into(new Target(){
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        toolbarLayout.setBackground(new BitmapDrawable(getResources(), bitmap));
+                    }
+
+                    @Override
+                    public void onBitmapFailed(final Drawable errorDrawable) {
+                        Log.d("TAG", "FAILED");
+                    }
+
+                    @Override
+                    public void onPrepareLoad(final Drawable placeHolderDrawable) {
+                        Log.d("TAG", "Prepare Load");
+                    }
+                });
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -151,6 +176,7 @@ public class StudentActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
             }
         }).start();
+        */
     }
 
     @Override
@@ -169,6 +195,7 @@ public class StudentActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
     final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -176,4 +203,5 @@ public class StudentActivity extends AppCompatActivity {
             toolbarLayout.setBackground(actionBarBackground);
         }
     };
+    */
 }

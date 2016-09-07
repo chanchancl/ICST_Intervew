@@ -30,23 +30,24 @@ public class StudentDao extends AbstractDao<Student, Long> {
         public final static Property Id = new Property(0, long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "Name", false, "NAME");
         public final static Property Gender = new Property(2, boolean.class, "Gender", false, "GENDER");
-        public final static Property Photo = new Property(3, String.class, "Photo", false, "PHOTO");
-        public final static Property College = new Property(4, Integer.class, "College", false, "COLLEGE");
-        public final static Property Major = new Property(5, String.class, "Major", false, "MAJOR");
-        public final static Property Phone = new Property(6, String.class, "Phone", false, "PHONE");
-        public final static Property PhoneShort = new Property(7, String.class, "PhoneShort", false, "PHONE_SHORT");
-        public final static Property QQ = new Property(8, String.class, "QQ", false, "QQ");
-        public final static Property Wechat = new Property(9, String.class, "Wechat", false, "WECHAT");
-        public final static Property Dorm = new Property(10, String.class, "Dorm", false, "DORM");
-        public final static Property Adjust = new Property(11, boolean.class, "Adjust", false, "ADJUST");
-        public final static Property Wish1 = new Property(12, int.class, "Wish1", false, "WISH1");
-        public final static Property Wish2 = new Property(13, int.class, "Wish2", false, "WISH2");
-        public final static Property Note = new Property(14, String.class, "Note", false, "NOTE");
-        public final static Property Noticed = new Property(15, Boolean.class, "Noticed", false, "NOTICED");
-        public final static Property Deleted = new Property(16, Boolean.class, "Deleted", false, "DELETED");
-        public final static Property Signed = new Property(17, Boolean.class, "Signed", false, "SIGNED");
-        public final static Property Accepted = new Property(18, Integer.class, "Accepted", false, "ACCEPTED");
-        public final static Property GroupId = new Property(19, long.class, "groupId", false, "GROUP_ID");
+        public final static Property OriginalPhoto = new Property(3, String.class, "OriginalPhoto", false, "ORIGINAL_PHOTO");
+        public final static Property Photo = new Property(4, String.class, "Photo", false, "PHOTO");
+        public final static Property College = new Property(5, Integer.class, "College", false, "COLLEGE");
+        public final static Property Major = new Property(6, String.class, "Major", false, "MAJOR");
+        public final static Property Phone = new Property(7, String.class, "Phone", false, "PHONE");
+        public final static Property PhoneShort = new Property(8, String.class, "PhoneShort", false, "PHONE_SHORT");
+        public final static Property QQ = new Property(9, String.class, "QQ", false, "QQ");
+        public final static Property Wechat = new Property(10, String.class, "Wechat", false, "WECHAT");
+        public final static Property Dorm = new Property(11, String.class, "Dorm", false, "DORM");
+        public final static Property Adjust = new Property(12, boolean.class, "Adjust", false, "ADJUST");
+        public final static Property Wish1 = new Property(13, int.class, "Wish1", false, "WISH1");
+        public final static Property Wish2 = new Property(14, int.class, "Wish2", false, "WISH2");
+        public final static Property Note = new Property(15, String.class, "Note", false, "NOTE");
+        public final static Property Noticed = new Property(16, Boolean.class, "Noticed", false, "NOTICED");
+        public final static Property Deleted = new Property(17, Boolean.class, "Deleted", false, "DELETED");
+        public final static Property Signed = new Property(18, Boolean.class, "Signed", false, "SIGNED");
+        public final static Property Accepted = new Property(19, Integer.class, "Accepted", false, "ACCEPTED");
+        public final static Property GroupId = new Property(20, long.class, "groupId", false, "GROUP_ID");
     }
 
     private DaoSession daoSession;
@@ -69,23 +70,24 @@ public class StudentDao extends AbstractDao<Student, Long> {
                 "\"_id\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
                 "\"NAME\" TEXT NOT NULL ," + // 1: Name
                 "\"GENDER\" INTEGER NOT NULL ," + // 2: Gender
-                "\"PHOTO\" TEXT," + // 3: Photo
-                "\"COLLEGE\" INTEGER," + // 4: College
-                "\"MAJOR\" TEXT," + // 5: Major
-                "\"PHONE\" TEXT NOT NULL ," + // 6: Phone
-                "\"PHONE_SHORT\" TEXT," + // 7: PhoneShort
-                "\"QQ\" TEXT," + // 8: QQ
-                "\"WECHAT\" TEXT," + // 9: Wechat
-                "\"DORM\" TEXT," + // 10: Dorm
-                "\"ADJUST\" INTEGER NOT NULL ," + // 11: Adjust
-                "\"WISH1\" INTEGER NOT NULL ," + // 12: Wish1
-                "\"WISH2\" INTEGER NOT NULL ," + // 13: Wish2
-                "\"NOTE\" TEXT," + // 14: Note
-                "\"NOTICED\" INTEGER," + // 15: Noticed
-                "\"DELETED\" INTEGER," + // 16: Deleted
-                "\"SIGNED\" INTEGER," + // 17: Signed
-                "\"ACCEPTED\" INTEGER," + // 18: Accepted
-                "\"GROUP_ID\" INTEGER NOT NULL );"); // 19: groupId
+                "\"ORIGINAL_PHOTO\" TEXT," + // 3: OriginalPhoto
+                "\"PHOTO\" TEXT," + // 4: Photo
+                "\"COLLEGE\" INTEGER," + // 5: College
+                "\"MAJOR\" TEXT," + // 6: Major
+                "\"PHONE\" TEXT NOT NULL ," + // 7: Phone
+                "\"PHONE_SHORT\" TEXT," + // 8: PhoneShort
+                "\"QQ\" TEXT," + // 9: QQ
+                "\"WECHAT\" TEXT," + // 10: Wechat
+                "\"DORM\" TEXT," + // 11: Dorm
+                "\"ADJUST\" INTEGER NOT NULL ," + // 12: Adjust
+                "\"WISH1\" INTEGER NOT NULL ," + // 13: Wish1
+                "\"WISH2\" INTEGER NOT NULL ," + // 14: Wish2
+                "\"NOTE\" TEXT," + // 15: Note
+                "\"NOTICED\" INTEGER," + // 16: Noticed
+                "\"DELETED\" INTEGER," + // 17: Deleted
+                "\"SIGNED\" INTEGER," + // 18: Signed
+                "\"ACCEPTED\" INTEGER," + // 19: Accepted
+                "\"GROUP_ID\" INTEGER NOT NULL );"); // 20: groupId
     }
 
     /** Drops the underlying database table. */
@@ -100,71 +102,76 @@ public class StudentDao extends AbstractDao<Student, Long> {
         stmt.bindLong(1, entity.getId());
         stmt.bindString(2, entity.getName());
         stmt.bindLong(3, entity.getGender() ? 1L: 0L);
+
+        String OriginalPhoto = entity.getOriginalPhoto();
+        if (OriginalPhoto != null) {
+            stmt.bindString(4, OriginalPhoto);
+        }
  
         String Photo = entity.getPhoto();
         if (Photo != null) {
-            stmt.bindString(4, Photo);
+            stmt.bindString(5, Photo);
         }
  
         Integer College = entity.getCollege();
         if (College != null) {
-            stmt.bindLong(5, College);
+            stmt.bindLong(6, College);
         }
  
         String Major = entity.getMajor();
         if (Major != null) {
-            stmt.bindString(6, Major);
+            stmt.bindString(7, Major);
         }
-        stmt.bindString(7, entity.getPhone());
+        stmt.bindString(8, entity.getPhone());
  
         String PhoneShort = entity.getPhoneShort();
         if (PhoneShort != null) {
-            stmt.bindString(8, PhoneShort);
+            stmt.bindString(9, PhoneShort);
         }
  
         String QQ = entity.getQQ();
         if (QQ != null) {
-            stmt.bindString(9, QQ);
+            stmt.bindString(10, QQ);
         }
  
         String Wechat = entity.getWechat();
         if (Wechat != null) {
-            stmt.bindString(10, Wechat);
+            stmt.bindString(11, Wechat);
         }
  
         String Dorm = entity.getDorm();
         if (Dorm != null) {
-            stmt.bindString(11, Dorm);
+            stmt.bindString(12, Dorm);
         }
-        stmt.bindLong(12, entity.getAdjust() ? 1L: 0L);
-        stmt.bindLong(13, entity.getWish1());
-        stmt.bindLong(14, entity.getWish2());
+        stmt.bindLong(13, entity.getAdjust() ? 1L : 0L);
+        stmt.bindLong(14, entity.getWish1());
+        stmt.bindLong(15, entity.getWish2());
  
         String Note = entity.getNote();
         if (Note != null) {
-            stmt.bindString(15, Note);
+            stmt.bindString(16, Note);
         }
  
         Boolean Noticed = entity.getNoticed();
         if (Noticed != null) {
-            stmt.bindLong(16, Noticed ? 1L: 0L);
+            stmt.bindLong(17, Noticed ? 1L : 0L);
         }
  
         Boolean Deleted = entity.getDeleted();
         if (Deleted != null) {
-            stmt.bindLong(17, Deleted ? 1L: 0L);
+            stmt.bindLong(18, Deleted ? 1L : 0L);
         }
  
         Boolean Signed = entity.getSigned();
         if (Signed != null) {
-            stmt.bindLong(18, Signed ? 1L: 0L);
+            stmt.bindLong(19, Signed ? 1L : 0L);
         }
  
         Integer Accepted = entity.getAccepted();
         if (Accepted != null) {
-            stmt.bindLong(19, Accepted);
+            stmt.bindLong(20, Accepted);
         }
-        stmt.bindLong(20, entity.getGroupId());
+        stmt.bindLong(21, entity.getGroupId());
     }
 
     @Override
@@ -173,71 +180,76 @@ public class StudentDao extends AbstractDao<Student, Long> {
         stmt.bindLong(1, entity.getId());
         stmt.bindString(2, entity.getName());
         stmt.bindLong(3, entity.getGender() ? 1L: 0L);
+
+        String OriginalPhoto = entity.getOriginalPhoto();
+        if (OriginalPhoto != null) {
+            stmt.bindString(4, OriginalPhoto);
+        }
  
         String Photo = entity.getPhoto();
         if (Photo != null) {
-            stmt.bindString(4, Photo);
+            stmt.bindString(5, Photo);
         }
  
         Integer College = entity.getCollege();
         if (College != null) {
-            stmt.bindLong(5, College);
+            stmt.bindLong(6, College);
         }
  
         String Major = entity.getMajor();
         if (Major != null) {
-            stmt.bindString(6, Major);
+            stmt.bindString(7, Major);
         }
-        stmt.bindString(7, entity.getPhone());
+        stmt.bindString(8, entity.getPhone());
  
         String PhoneShort = entity.getPhoneShort();
         if (PhoneShort != null) {
-            stmt.bindString(8, PhoneShort);
+            stmt.bindString(9, PhoneShort);
         }
  
         String QQ = entity.getQQ();
         if (QQ != null) {
-            stmt.bindString(9, QQ);
+            stmt.bindString(10, QQ);
         }
  
         String Wechat = entity.getWechat();
         if (Wechat != null) {
-            stmt.bindString(10, Wechat);
+            stmt.bindString(11, Wechat);
         }
  
         String Dorm = entity.getDorm();
         if (Dorm != null) {
-            stmt.bindString(11, Dorm);
+            stmt.bindString(12, Dorm);
         }
-        stmt.bindLong(12, entity.getAdjust() ? 1L: 0L);
-        stmt.bindLong(13, entity.getWish1());
-        stmt.bindLong(14, entity.getWish2());
+        stmt.bindLong(13, entity.getAdjust() ? 1L : 0L);
+        stmt.bindLong(14, entity.getWish1());
+        stmt.bindLong(15, entity.getWish2());
  
         String Note = entity.getNote();
         if (Note != null) {
-            stmt.bindString(15, Note);
+            stmt.bindString(16, Note);
         }
  
         Boolean Noticed = entity.getNoticed();
         if (Noticed != null) {
-            stmt.bindLong(16, Noticed ? 1L: 0L);
+            stmt.bindLong(17, Noticed ? 1L : 0L);
         }
  
         Boolean Deleted = entity.getDeleted();
         if (Deleted != null) {
-            stmt.bindLong(17, Deleted ? 1L: 0L);
+            stmt.bindLong(18, Deleted ? 1L : 0L);
         }
  
         Boolean Signed = entity.getSigned();
         if (Signed != null) {
-            stmt.bindLong(18, Signed ? 1L: 0L);
+            stmt.bindLong(19, Signed ? 1L : 0L);
         }
  
         Integer Accepted = entity.getAccepted();
         if (Accepted != null) {
-            stmt.bindLong(19, Accepted);
+            stmt.bindLong(20, Accepted);
         }
-        stmt.bindLong(20, entity.getGroupId());
+        stmt.bindLong(21, entity.getGroupId());
     }
 
     @Override
@@ -257,23 +269,24 @@ public class StudentDao extends AbstractDao<Student, Long> {
             cursor.getLong(offset + 0), // id
             cursor.getString(offset + 1), // Name
             cursor.getShort(offset + 2) != 0, // Gender
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // Photo
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // College
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // Major
-            cursor.getString(offset + 6), // Phone
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // PhoneShort
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // QQ
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // Wechat
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // Dorm
-            cursor.getShort(offset + 11) != 0, // Adjust
-            cursor.getInt(offset + 12), // Wish1
-            cursor.getInt(offset + 13), // Wish2
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // Note
-            cursor.isNull(offset + 15) ? null : cursor.getShort(offset + 15) != 0, // Noticed
-            cursor.isNull(offset + 16) ? null : cursor.getShort(offset + 16) != 0, // Deleted
-            cursor.isNull(offset + 17) ? null : cursor.getShort(offset + 17) != 0, // Signed
-            cursor.isNull(offset + 18) ? null : cursor.getInt(offset + 18), // Accepted
-            cursor.getLong(offset + 19) // groupId
+                cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // OriginalPhoto
+                cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // Photo
+                cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // College
+                cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // Major
+                cursor.getString(offset + 7), // Phone
+                cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // PhoneShort
+                cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // QQ
+                cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // Wechat
+                cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // Dorm
+                cursor.getShort(offset + 12) != 0, // Adjust
+                cursor.getInt(offset + 13), // Wish1
+                cursor.getInt(offset + 14), // Wish2
+                cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // Note
+                cursor.isNull(offset + 16) ? null : cursor.getShort(offset + 16) != 0, // Noticed
+                cursor.isNull(offset + 17) ? null : cursor.getShort(offset + 17) != 0, // Deleted
+                cursor.isNull(offset + 18) ? null : cursor.getShort(offset + 18) != 0, // Signed
+                cursor.isNull(offset + 19) ? null : cursor.getInt(offset + 19), // Accepted
+                cursor.getLong(offset + 20) // groupId
         );
         return entity;
     }
@@ -283,23 +296,24 @@ public class StudentDao extends AbstractDao<Student, Long> {
         entity.setId(cursor.getLong(offset + 0));
         entity.setName(cursor.getString(offset + 1));
         entity.setGender(cursor.getShort(offset + 2) != 0);
-        entity.setPhoto(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setCollege(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setMajor(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setPhone(cursor.getString(offset + 6));
-        entity.setPhoneShort(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setQQ(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setWechat(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setDorm(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setAdjust(cursor.getShort(offset + 11) != 0);
-        entity.setWish1(cursor.getInt(offset + 12));
-        entity.setWish2(cursor.getInt(offset + 13));
-        entity.setNote(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
-        entity.setNoticed(cursor.isNull(offset + 15) ? null : cursor.getShort(offset + 15) != 0);
-        entity.setDeleted(cursor.isNull(offset + 16) ? null : cursor.getShort(offset + 16) != 0);
-        entity.setSigned(cursor.isNull(offset + 17) ? null : cursor.getShort(offset + 17) != 0);
-        entity.setAccepted(cursor.isNull(offset + 18) ? null : cursor.getInt(offset + 18));
-        entity.setGroupId(cursor.getLong(offset + 19));
+        entity.setOriginalPhoto(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setPhoto(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setCollege(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setMajor(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setPhone(cursor.getString(offset + 7));
+        entity.setPhoneShort(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setQQ(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setWechat(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setDorm(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setAdjust(cursor.getShort(offset + 12) != 0);
+        entity.setWish1(cursor.getInt(offset + 13));
+        entity.setWish2(cursor.getInt(offset + 14));
+        entity.setNote(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+        entity.setNoticed(cursor.isNull(offset + 16) ? null : cursor.getShort(offset + 16) != 0);
+        entity.setDeleted(cursor.isNull(offset + 17) ? null : cursor.getShort(offset + 17) != 0);
+        entity.setSigned(cursor.isNull(offset + 18) ? null : cursor.getShort(offset + 18) != 0);
+        entity.setAccepted(cursor.isNull(offset + 19) ? null : cursor.getInt(offset + 19));
+        entity.setGroupId(cursor.getLong(offset + 20));
      }
     
     @Override

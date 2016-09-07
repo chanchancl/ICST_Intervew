@@ -117,7 +117,7 @@ public class Format {
             case 28:
                 return "国际教育学院";
             default:
-                return "（未填）";
+                return "*未填写";
         }
     }
 
@@ -193,6 +193,11 @@ public class Format {
         else return "不服从调剂";
     }
 
+    public static String Chinese(boolean adjust) {
+        if (adjust) return "是";
+        else return "否";
+    }
+
     public static String State(int state) {
         switch (state) {
             case 0:
@@ -232,5 +237,10 @@ public class Format {
             };
         }
         return stringList;
+    }
+
+    public static String Gender(boolean gender) {
+        if (gender) return "男";
+        return "女";
     }
 }

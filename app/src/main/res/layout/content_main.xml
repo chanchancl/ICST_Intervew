@@ -29,15 +29,6 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="无数据"
-            android:id="@+id/textEmpty"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/abc_action_bar_overflow_padding_end_material" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="导入"
-            android:id="@+id/buttonImport"
-            android:layout_gravity="center_horizontal" />
+            android:id="@+id/textEmpty" />
     </LinearLayout>
 </RelativeLayout>
