@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -65,7 +66,7 @@ public class StudentActivity extends AppCompatActivity {
 
         setTitle(student.getName());
 
-        filePath = StudentActivity.this.getFilesDir() + "/original/" + student.getPhoto();
+        filePath = Environment.getExternalStorageDirectory() + "/original/" + student.getPhoto();
 
         phoneLayout = (LinearLayout) findViewById(R.id.phoneLayout);
         phoneText = (TextView) findViewById(R.id.phoneText);

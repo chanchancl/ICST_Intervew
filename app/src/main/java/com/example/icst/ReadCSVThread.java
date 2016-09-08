@@ -3,6 +3,7 @@ package com.example.icst;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -133,8 +134,8 @@ public class ReadCSVThread extends Thread {
                             }
                             //保存图片
                             try {
-                                File thumbnailDir = new File(context.getFilesDir() + "/thumbnail");
-                                File originalDir = new File(context.getFilesDir() + "/original");
+                                File thumbnailDir = new File(Environment.getExternalStorageDirectory() + "/thumbnail");
+                                File originalDir = new File(Environment.getExternalStorageDirectory() + "/original");
                                 if (!thumbnailDir.exists())
                                     if (thumbnailDir.mkdirs())
                                         Log.i("Create Dir", "Success");
