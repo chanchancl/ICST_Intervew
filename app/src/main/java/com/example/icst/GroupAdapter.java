@@ -3,8 +3,6 @@ package com.example.icst;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -190,10 +188,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
                 mContext.startActivity(intent);
             }
         });
-        if (mData.get(myViewHolder.getAdapterPosition()).getPhoto().isEmpty())
-            Picasso.with(mContext).load(R.drawable.ic_student).into(myViewHolder.mPhoto);
-        else
-            Picasso.with(mContext).load(new File(mData.get(myViewHolder.getAdapterPosition()).getPhoto())).into(myViewHolder.mPhoto);
+        String filePath = mContext.getFilesDir() + "/thumbnail/" + mData.get(i).getPhoto();
+        Object tag = new Object();
+        if(mData.get(i).getPhoto().compareTo("") != 0) {
+            Picasso.with(mContext).load(new File(filePath)).tag(tag).into(myViewHolder.mPhoto);
+        } else {
+            Picasso.with(mContext).load(R.drawable.ic_student).tag(tag).into(myViewHolder.mPhoto);
+        }
     }
 
     @Override
@@ -216,4 +217,6 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         mData.get(position).respond = respond;
         notifyItemChanged(position);
     }
+
+
 }
