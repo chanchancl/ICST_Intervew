@@ -61,7 +61,6 @@ public class TestDaoGenerator {
         student.addIdProperty().notNull();
         student.addStringProperty("Name").notNull();
         student.addBooleanProperty("Gender").notNull();
-        student.addStringProperty("OriginalPhoto");
         student.addStringProperty("Photo");
         student.addIntProperty("College");
         student.addStringProperty("Major");

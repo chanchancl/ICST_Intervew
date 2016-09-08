@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                                             return;
                                         }
                                         progressDialog.dismiss();
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putInt("ROUND", msg.arg1);
+                                        editor.apply();
                                         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                                         View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
                                         final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
@@ -302,6 +305,34 @@ public class MainActivity extends AppCompatActivity {
                 new UploadThread(MainActivity.this, handler2).start();
                 return true;
             case R.id.action_round:
+                final ProgressDialog progressDialog3 = new ProgressDialog(this);
+                progressDialog3.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog3.setCancelable(false);
+                progressDialog3.setMessage("正在处理...");
+                final Handler handler3 = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        super.handleMessage(msg);
+                        switch (msg.what) {
+                            case 0:
+                                mainAdapter.notifyDataSetChanged();
+                                progressDialog3.dismiss();
+                                String filePath = (String) msg.obj;
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.parse("file://" + filePath), "text/*");
+                                startActivity(intent);
+                                break;
+                            case 1:
+                                mainAdapter.notifyDataSetChanged();
+                                progressDialog3.dismiss();
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setIcon(R.drawable.ic_warning)
+                                        .setTitle("写入文件时出现错误。")
+                                        .show();
+                        }
+                    }
+                };
                 if (sharedPreferences.getInt("ROUND", 1) == 1) {
                     //进入下一轮
                     final int[] total = new int[5];
@@ -362,19 +393,19 @@ public class MainActivity extends AppCompatActivity {
                                     if (groupsNum[3] <= 1 || groupsNum[3] > total[3]) return;
                                     if (groupsNum[4] <= 1 || groupsNum[4] > total[4]) return;
 
+                                    progressDialog3.show();
                                     SharedPreferences.Editor edit = sharedPreferences.edit();
                                     edit.putInt("ROUND", 2);
                                     edit.apply();
-                                    new GenerateDataThread(MainActivity.this, groupsNum).start();
-                                    mainAdapter.notifyDataSetChanged();
+                                    new GenerateDataThread(MainActivity.this, groupsNum, handler3).start();
                                 }
                             })
                             .setNegativeButton("取消", null)
                             .show();
                 } else {
                     //输出最终名单
-                    //TODO Create Handler
-                    new GenerateDataThread(MainActivity.this, new Handler());
+                    progressDialog3.show();
+                    new GenerateDataThread(MainActivity.this, handler3).start();
                 }
                 break;
         }

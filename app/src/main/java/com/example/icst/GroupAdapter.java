@@ -3,6 +3,7 @@ package com.example.icst;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -190,10 +191,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
         });
         String filePath = mContext.getFilesDir() + "/thumbnail/" + mData.get(i).getPhoto();
         Object tag = new Object();
-        if(mData.get(i).getPhoto().compareTo("") != 0) {
-            Picasso.with(mContext).load(new File(filePath)).tag(tag).into(myViewHolder.mPhoto);
+        if (!mData.get(i).getPhoto().isEmpty()) {
+            Picasso.with(mContext).load(new File(filePath))
+                    .error(R.drawable.ic_image)
+                    .tag(tag)
+                    .into(myViewHolder.mPhoto);
         } else {
-            Picasso.with(mContext).load(R.drawable.ic_student).tag(tag).into(myViewHolder.mPhoto);
+            myViewHolder.mPhoto.setImageResource(R.drawable.ic_student);
         }
     }
 

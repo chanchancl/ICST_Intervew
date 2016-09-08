@@ -66,7 +66,7 @@ public class ReadCSVThread extends Thread {
     Handler handler;
     List<String> users = new ArrayList<>();
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-    boolean round1 = true;
+    int round;
     Message msg;
 
     ReadCSVThread(String CSVPath, Context context, Activity activity, Handler handler) {
@@ -77,6 +77,7 @@ public class ReadCSVThread extends Thread {
         DaoSession session = DBUtil.getDaoSession(context);
         groupDao = session.getGroupDao();
         studentDao = session.getStudentDao();
+        round = 1;
     }
 
     @Override
@@ -134,16 +135,16 @@ public class ReadCSVThread extends Thread {
                             try {
                                 File thumbnailDir = new File(context.getFilesDir() + "/thumbnail");
                                 File originalDir = new File(context.getFilesDir() + "/original");
-                                if(!thumbnailDir.exists())
-                                    if(thumbnailDir.mkdirs())
-                                        Log.i("Create Dir","Success");
+                                if (!thumbnailDir.exists())
+                                    if (thumbnailDir.mkdirs())
+                                        Log.i("Create Dir", "Success");
                                     else
-                                        Log.e("Create Dir","Fail");
-                                if(!originalDir.exists())
-                                    if(originalDir.mkdirs())
-                                        Log.i("Create Dir","Success");
+                                        Log.e("Create Dir", "Fail");
+                                if (!originalDir.exists())
+                                    if (originalDir.mkdirs())
+                                        Log.i("Create Dir", "Success");
                                     else
-                                        Log.e("Create Dir","Fail");
+                                        Log.e("Create Dir", "Fail");
                                 File thumbnail = new File(thumbnailDir.getPath(), photo);
                                 File original = new File(originalDir.getPath(), photo);
                                 BufferedOutputStream thumbnailBos = new BufferedOutputStream(new FileOutputStream(thumbnail));
@@ -189,7 +190,7 @@ public class ReadCSVThread extends Thread {
                         break;
                     case "GROUP":
                         try {
-                            round1 = theLine[G_DEPART].equals("0");
+                            if (!theLine[G_DEPART].equals("0")) round = 2;
                             if (!users.contains(theLine[G_HEAD])) users.add(theLine[G_HEAD]);
                             groupDao.insert(new Group(
                                     Long.parseLong(theLine[G_ID]),
@@ -222,6 +223,7 @@ public class ReadCSVThread extends Thread {
 
             msg = new Message();
             msg.what = 0;
+            msg.arg1 = round;
             msg.obj = message;
             handler.sendMessage(msg);
             

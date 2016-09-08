@@ -55,7 +55,7 @@ public class UploadThread extends Thread {
                         message += Long.toHexString(students.get(x).getId()) + ",";
                     message += Long.toHexString(students.get(size - 1).getId());
                 }
-                if (i != 5) message += "-";
+                if (i != 15) message += "-";
             }
         }
         Message msg = new Message();

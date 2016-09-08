@@ -26,6 +26,7 @@ import java.io.IOException;
 public class StudentActivity extends AppCompatActivity {
 
     Student student;
+    String filePath;
 
     private DaoSession session;
     private StudentDao studentDao;
@@ -45,9 +46,6 @@ public class StudentActivity extends AppCompatActivity {
     private TextView wishText;
     private TextView adjustText;
     private TextView noteText;
-    private Uri imageUri; //图片路径
-
-    public static final int TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class StudentActivity extends AppCompatActivity {
 
         setTitle(student.getName());
 
-        //TODO TextView 还没更改
+        filePath = StudentActivity.this.getFilesDir() + "/original/" + student.getPhoto();
 
         phoneLayout = (LinearLayout) findViewById(R.id.phoneLayout);
         phoneText = (TextView) findViewById(R.id.phoneText);
@@ -133,25 +131,28 @@ public class StudentActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (student.getPhoto().isEmpty()) return;
-                File file = new File(student.getPhoto());
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(file), "image/*");
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(new File(filePath)), "image/*");
                 startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         if (student.getPhoto() == null || student.getPhoto().isEmpty()) return;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String filePath = StudentActivity.this.getFilesDir() + "/original/" + student.getPhoto();
                 Bitmap bitmap = null;
                 try {
                     bitmap = Picasso.with(StudentActivity.this).load(new File(filePath)).get();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                if (bitmap == null) return;
                 Message msg = new Message();
                 msg.obj = bitmap;
                 handler.sendMessage(msg);
@@ -187,17 +188,17 @@ public class StudentActivity extends AppCompatActivity {
             float scaleBitmap = 1.0f * w / h;
             int retX = 0;
             int retY = 0;
-            if(scale > scaleBitmap) {
-                retY = (int) (h - (w / scale))/2;
+            if (scale > scaleBitmap) {
+                retY = (int) (h - (w / scale)) / 2;
                 h = (int) (w / scale);
             } else {
-                retX = (int) (w - (h * scale))/2;
+                retX = (int) (w - (h * scale)) / 2;
                 w = (int) (h * scale);
             }
 
             Bitmap mBitmap = Bitmap.createBitmap(bitmap, retX, retY, w, h, null, false);
             bitmap.recycle();
-            BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(),mBitmap);
+            BitmapDrawable actionBarBackground = new BitmapDrawable(getResources(), mBitmap);
             toolbarLayout.setBackground(actionBarBackground);
         }
     };

@@ -1,7 +1,9 @@
 package com.example.icst;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +12,7 @@ import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.GroupDao;
 import com.example.icst.dao.StudentDao;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DateFormat;
@@ -25,23 +28,27 @@ public class GenerateDataThread extends Thread {
     private DaoSession session;
     private StudentDao studentDao;
     private GroupDao groupDao;
+    private Context context;
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     private boolean sp;
     private int[] groupsNum = new int[5];
 
     public GenerateDataThread(Context context, Handler handler) {
+        this.context = context;
+        this.handler = handler;
         session = DBUtil.getDaoSession(context);
         studentDao = session.getStudentDao();
         groupDao = session.getGroupDao();
-        this.handler = handler;
         sp = false;
     }
 
-    public GenerateDataThread(Context context, int[] groupsNum) {
+    public GenerateDataThread(Context context, int[] groupsNum, Handler handler) {
+        this.context = context;
+        this.groupsNum = groupsNum;
+        this.handler = handler;
         session = DBUtil.getDaoSession(context);
         studentDao = session.getStudentDao();
         groupDao = session.getGroupDao();
-        this.groupsNum = groupsNum;
         sp = true;
     }
 
@@ -80,86 +87,115 @@ public class GenerateDataThread extends Thread {
                 }
                 id += groupsNum[d - 1];
             }
-            writeCSV();
+            writeCSV("round2");
         } else {
             List<Student> students = studentDao.queryBuilder()
-                    .where(StudentDao.Properties.Accepted.ge(10))
+                    .where(StudentDao.Properties.Accepted.le(10))
                     .list();
             studentDao.deleteInTx(students);
-            writeCSV();
+            groupDao.deleteAll();
+            for (int i = 1; i <= 5; i++) {
+                Group group = new Group(i, i);
+                groupDao.insert(group);
+            }
+            students = studentDao.loadAll();
+            for (Student student :
+                    students) {
+                int department = student.getAccepted() - 10;
+                student.setGroupId(department);
+            }
+            writeCSV("New_ICSTers");
         }
     }
 
-    public void writeCSV() {
+    public void writeCSV(String name) {
         File folder = new File(Environment.getExternalStorageDirectory()
                 + "/csv_data");
-        final String filename = folder.toString() + "/" + "round2" + "csv";
+        folder.mkdirs();
+        final String filename = folder.toString() + "/" + name + ".csv";
         try {
             FileWriter fw = new FileWriter(filename);
+            BufferedWriter bfw = new BufferedWriter(fw);
+            bfw.write(0xFEFF);
             List<Student> students = studentDao.queryBuilder()
                     .orderAsc(StudentDao.Properties.Accepted)
                     .list();
             for (Student student :
                     students) {
-                fw.append("STUDENT,");
-                fw.append(String.valueOf(student.getId()));
-                fw.append(",");
-                fw.append(student.getName());
-                fw.append(",");
-                fw.append(Format.Gender(student.getGender()));
-                fw.append(",");
-                String[] photo = student.getOriginalPhoto().split("//.");
-                fw.append(photo[0]);
-                fw.append(",.");
-                fw.append(photo[1]);
-                fw.append(",");
-                fw.append(Format.College(student.getCollege()));
-                fw.append(",");
-                fw.append(student.getMajor());
-                fw.append(",");
-                fw.append(student.getPhone());
-                fw.append(",");
-                fw.append(student.getPhoneShort());
-                fw.append(",");
-                fw.append(student.getQQ());
-                fw.append(",");
-                fw.append(student.getWechat());
-                fw.append(",");
-                fw.append(student.getDorm());
-                fw.append(",");
-                fw.append(Format.Chinese(student.getAdjust()));
-                fw.append(",");
-                fw.append(Format.Department(student.getWish1()));
-                fw.append(",");
-                fw.append(Format.Department(student.getWish2()));
-                fw.append(",");
-                fw.append(student.getNote());
-                fw.append(",");
-                fw.append(String.valueOf(student.getGroupId()));
-                fw.append("/n");
+                bfw.write("STUDENT,");
+                bfw.write(String.valueOf(student.getId()));
+                bfw.write(",");
+                bfw.write(student.getName());
+                bfw.write(",");
+                bfw.write(Format.Gender(student.getGender()));
+                bfw.write(",");
+                if (student.getPhoto().isEmpty())
+                    bfw.write(",,");
+                else {
+                    String[] photo = student.getPhoto().split("\\.");
+                    if (photo.length != 2)
+                        bfw.write(",,");
+                    else {
+                        bfw.write(photo[0]);
+                        bfw.write(",.");
+                        bfw.write(photo[1]);
+                        bfw.write(",");
+                    }
+                }
+                bfw.write(Format.College(student.getCollege()));
+                bfw.write(",");
+                bfw.write(student.getMajor());
+                bfw.write(",");
+                bfw.write(student.getPhone());
+                bfw.write(",");
+                bfw.write(student.getPhoneShort());
+                bfw.write(",");
+                bfw.write(student.getQQ());
+                bfw.write(",");
+                bfw.write(student.getWechat());
+                bfw.write(",");
+                bfw.write(student.getDorm());
+                bfw.write(",");
+                bfw.write(Format.Chinese(student.getAdjust()));
+                bfw.write(",");
+                bfw.write(Format.Department(student.getWish1()));
+                bfw.write(",");
+                bfw.write(Format.Department(student.getWish2()));
+                bfw.write(",");
+                bfw.write(student.getNote());
+                bfw.write(",");
+                bfw.write(String.valueOf(student.getGroupId()));
+                bfw.newLine();
             }
             if (sp) {
                 List<Group> groups = groupDao.loadAll();
                 for (Group group :
                         groups) {
-                    fw.append("GROUP,");
-                    fw.append(String.valueOf(group.getId()));
-                    fw.append(",");
-                    fw.append(dateFormat.format(group.getTime()));
-                    fw.append(",");
-                    fw.append(group.getLocation());
-                    fw.append(",");
-                    fw.append(group.getHead());
-                    fw.append(",");
-                    fw.append(group.getHeadPhone());
-                    fw.append(",");
-                    fw.append(String.valueOf(group.getDepart()));
-                    fw.append("/n");
+                    bfw.write("GROUP,");
+                    bfw.write(String.valueOf(group.getId()));
+                    bfw.write(",");
+                    bfw.write(dateFormat.format(group.getTime()));
+                    bfw.write(",");
+                    bfw.write(group.getLocation());
+                    bfw.write(",");
+                    bfw.write(group.getHead());
+                    bfw.write(",");
+                    bfw.write(group.getHeadPhone());
+                    bfw.write(",");
+                    bfw.write(String.valueOf(group.getDepart()));
+                    bfw.newLine();
                 }
             }
-            fw.close();
+            bfw.flush();
+            bfw.close();
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = filename;
+            handler.sendMessage(msg);
         } catch (Exception e) {
-            //TODO
+            Message msg = new Message();
+            msg.what = 1;
+            handler.sendMessage(msg);
         }
     }
 }

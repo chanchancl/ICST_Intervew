@@ -23,7 +23,6 @@ public class Student {
     @NotNull
     private String Name;
     private boolean Gender;
-    private String OriginalPhoto;
     private String Photo;
     private Integer College;
     private String Major;
@@ -65,11 +64,10 @@ public class Student {
     }
 
     @Generated
-    public Student(long id, String Name, boolean Gender, String OriginalPhoto, String Photo, Integer College, String Major, String Phone, String PhoneShort, String QQ, String Wechat, String Dorm, boolean Adjust, int Wish1, int Wish2, String Note, Boolean Noticed, Boolean Deleted, Boolean Signed, Integer Accepted, long groupId) {
+    public Student(long id, String Name, boolean Gender, String Photo, Integer College, String Major, String Phone, String PhoneShort, String QQ, String Wechat, String Dorm, boolean Adjust, int Wish1, int Wish2, String Note, Boolean Noticed, Boolean Deleted, Boolean Signed, Integer Accepted, long groupId) {
         this.id = id;
         this.Name = Name;
         this.Gender = Gender;
-        this.OriginalPhoto = OriginalPhoto;
         this.Photo = Photo;
         this.College = College;
         this.Major = Major;
@@ -120,14 +118,6 @@ public class Student {
 
     public void setGender(boolean Gender) {
         this.Gender = Gender;
-    }
-
-    public String getOriginalPhoto() {
-        return OriginalPhoto;
-    }
-
-    public void setOriginalPhoto(String OriginalPhoto) {
-        this.OriginalPhoto = OriginalPhoto;
     }
 
     public String getPhoto() {
@@ -309,7 +299,6 @@ public class Student {
     public Student(long id,
                    String Name,
                    boolean Gender,
-                   String OriginalPhoto,
                    String Photo,
                    Integer College,
                    String Major,
@@ -326,7 +315,6 @@ public class Student {
         this.id = id;
         this.Name = Name;
         this.Gender = Gender;
-        this.OriginalPhoto = OriginalPhoto;
         this.Photo = Photo;
         this.College = College;
         this.Major = Major;
@@ -368,8 +356,6 @@ public class Student {
     public void acceptWish2() {
         Accepted = Wish2;
     }
-
-
     // KEEP METHODS END
 
 }
