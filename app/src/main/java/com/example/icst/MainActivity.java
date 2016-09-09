@@ -328,7 +328,8 @@ public class MainActivity extends AppCompatActivity {
                                 progressDialog3.dismiss();
                                 new AlertDialog.Builder(MainActivity.this)
                                         .setIcon(R.drawable.ic_warning)
-                                        .setTitle("写入文件时出现错误。")
+                                        .setTitle("错误")
+                                        .setMessage("写入文件时出错")
                                         .show();
                         }
                     }

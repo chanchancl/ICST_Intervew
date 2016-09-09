@@ -97,120 +97,116 @@ public class ReadCSVThread extends Thread {
         try {
             while ((line = br.readLine()) != null) {
                 String[] theLine = line.split(",");
-                switch (theLine[0]) {
-                    case "STUDENT":
-                        Long id = Long.parseLong(theLine[S_ID]);
-                        String name = theLine[S_NAME];
-                        boolean gender = theLine[S_GENDER].equals("男");
-                        String photo = theLine[S_PHOTO] + theLine[S_PHOTOTYPE];
-                        int college = Format.College(theLine[S_COLLEGE]);
-                        String major = theLine[S_MAJOR];
-                        String phone = theLine[S_PHONE];
-                        String phoneShort = theLine[S_PHONESHORT];
-                        String qq = theLine[S_QQ];
-                        String wechat = theLine[S_WECHAT];
-                        String dorm = theLine[S_DORM];
-                        boolean adjust = theLine[S_ADJUST].equals("是");
-                        int wish1 = Format.Department(theLine[S_WISH1]);
-                        int wish2 = Format.Department(theLine[S_WISH2]);
-                        String note = theLine[S_NOTE];
-                        long groupID = Long.parseLong(theLine[S_GID]);
+                if (theLine[0].contains("STUDENT")) {
+                    Long id = Long.parseLong(theLine[S_ID]);
+                    String name = theLine[S_NAME];
+                    boolean gender = theLine[S_GENDER].equals("男");
+                    String photo = theLine[S_PHOTO] + theLine[S_PHOTOTYPE];
+                    int college = Format.College(theLine[S_COLLEGE]);
+                    String major = theLine[S_MAJOR];
+                    String phone = theLine[S_PHONE];
+                    String phoneShort = theLine[S_PHONESHORT];
+                    String qq = theLine[S_QQ];
+                    String wechat = theLine[S_WECHAT];
+                    String dorm = theLine[S_DORM];
+                    boolean adjust = theLine[S_ADJUST].equals("是");
+                    int wish1 = Format.Department(theLine[S_WISH1]);
+                    int wish2 = Format.Department(theLine[S_WISH2]);
+                    String note = theLine[S_NOTE];
+                    long groupID = Long.parseLong(theLine[S_GID]);
 
-                        msg = new Message();
-                        msg.what = 1;
-                        msg.obj = name;
-                        handler.sendMessage(msg);
+                    msg = new Message();
+                    msg.what = 1;
+                    msg.obj = name;
+                    handler.sendMessage(msg);
 
-                        if (!photo.isEmpty()) {
-                            //下载图片
-                            try {
-                                mBitmap = Picasso.with(context)
-                                        .load("http://files.jsform.com/" + photo)
-                                        .resize(100, 100)
-                                        .centerCrop()
-                                        .get();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            //保存图片
-                            try {
-                                File thumbnailDir = new File(Environment.getExternalStorageDirectory() + "/thumbnail");
-                                File originalDir = new File(Environment.getExternalStorageDirectory() + "/original");
-                                if (!thumbnailDir.exists())
-                                    if (thumbnailDir.mkdirs())
-                                        Log.i("Create Dir", "Success");
-                                    else
-                                        Log.e("Create Dir", "Fail");
-                                if (!originalDir.exists())
-                                    if (originalDir.mkdirs())
-                                        Log.i("Create Dir", "Success");
-                                    else
-                                        Log.e("Create Dir", "Fail");
-                                File thumbnail = new File(thumbnailDir.getPath(), photo);
-                                File original = new File(originalDir.getPath(), photo);
-                                BufferedOutputStream thumbnailBos = new BufferedOutputStream(new FileOutputStream(thumbnail));
-                                BufferedOutputStream originalBos = new BufferedOutputStream(new FileOutputStream(original));
-                                Picasso.with(context)
-                                        .load("http://files.jsform.com/" + photo)
-                                        .resize(100, 100)
-                                        .centerCrop()
-                                        .get()
-                                        .compress(Bitmap.CompressFormat.JPEG, 80, thumbnailBos);
-                                Picasso.with(context)
-                                        .load("http://files.jsform.com/" + photo)
-                                        .get()
-                                        .compress(Bitmap.CompressFormat.JPEG, 80, originalBos);
-
-                                thumbnailBos.flush();
-                                thumbnailBos.close();
-                                originalBos.flush();
-                                originalBos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        studentDao.insert(new Student(
-                                id,
-                                name,
-                                gender,
-                                photo,
-                                college,
-                                major,
-                                phone,
-                                phoneShort,
-                                qq,
-                                wechat,
-                                dorm,
-                                adjust,
-                                wish1,
-                                wish2,
-                                note,
-                                groupID
-                        ));
-                        break;
-                    case "GROUP":
+                    if (!photo.isEmpty()) {
+                        //下载图片
                         try {
-                            if (!theLine[G_DEPART].equals("0")) round = 2;
-                            if (!users.contains(theLine[G_HEAD])) users.add(theLine[G_HEAD]);
-                            groupDao.insert(new Group(
-                                    Long.parseLong(theLine[G_ID]),
-                                    dateFormat.parse(theLine[G_TIME]),
-                                    theLine[G_LOCATION],
-                                    theLine[G_HEAD],
-                                    theLine[G_HEADPHONE],
-                                    Format.Department(theLine[G_DEPART])
-                            ));
-                            msg = new Message();
-                            msg.what = 1;
-                            msg.obj = "正在分组...";
-                            handler.sendMessage(msg);
-                        } catch (ParseException e) {
+                            mBitmap = Picasso.with(context)
+                                    .load("http://files.jsform.com/" + photo)
+                                    .resize(100, 100)
+                                    .centerCrop()
+                                    .get();
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        break;
-                    default:
-                        Log.d(theLine[0], "读取失败");
+                        //保存图片
+                        try {
+                            File thumbnailDir = new File(Environment.getExternalStorageDirectory() + "/thumbnail");
+                            File originalDir = new File(Environment.getExternalStorageDirectory() + "/original");
+                            if (!thumbnailDir.exists())
+                                if (thumbnailDir.mkdirs())
+                                    Log.i("Create Dir", "Success");
+                                else
+                                    Log.e("Create Dir", "Fail");
+                            if (!originalDir.exists())
+                                if (originalDir.mkdirs())
+                                    Log.i("Create Dir", "Success");
+                                else
+                                    Log.e("Create Dir", "Fail");
+                            File thumbnail = new File(thumbnailDir.getPath(), photo);
+                            File original = new File(originalDir.getPath(), photo);
+                            BufferedOutputStream thumbnailBos = new BufferedOutputStream(new FileOutputStream(thumbnail));
+                            BufferedOutputStream originalBos = new BufferedOutputStream(new FileOutputStream(original));
+                            Picasso.with(context)
+                                    .load("http://files.jsform.com/" + photo)
+                                    .resize(100, 100)
+                                    .centerCrop()
+                                    .get()
+                                    .compress(Bitmap.CompressFormat.JPEG, 80, thumbnailBos);
+                            Picasso.with(context)
+                                    .load("http://files.jsform.com/" + photo)
+                                    .get()
+                                    .compress(Bitmap.CompressFormat.JPEG, 80, originalBos);
+
+                            thumbnailBos.flush();
+                            thumbnailBos.close();
+                            originalBos.flush();
+                            originalBos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    studentDao.insert(new Student(
+                            id,
+                            name,
+                            gender,
+                            photo,
+                            college,
+                            major,
+                            phone,
+                            phoneShort,
+                            qq,
+                            wechat,
+                            dorm,
+                            adjust,
+                            wish1,
+                            wish2,
+                            note,
+                            groupID
+                    ));
+                }
+                if (theLine[0].contains("GROUP")) {
+                    try {
+                        if (!theLine[G_DEPART].equals("0")) round = 2;
+                        if (!users.contains(theLine[G_HEAD])) users.add(theLine[G_HEAD]);
+                        groupDao.insert(new Group(
+                                Long.parseLong(theLine[G_ID]),
+                                dateFormat.parse(theLine[G_TIME]),
+                                theLine[G_LOCATION],
+                                theLine[G_HEAD],
+                                theLine[G_HEADPHONE],
+                                Format.Department(theLine[G_DEPART])
+                        ));
+                        msg = new Message();
+                        msg.what = 1;
+                        msg.obj = "正在分组...";
+                        handler.sendMessage(msg);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             try {
@@ -227,7 +223,7 @@ public class ReadCSVThread extends Thread {
             msg.arg1 = round;
             msg.obj = message;
             handler.sendMessage(msg);
-            
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
