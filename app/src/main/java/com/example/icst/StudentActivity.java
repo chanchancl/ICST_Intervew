@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.icst.dao.DaoSession;
 import com.example.icst.dao.StudentDao;
@@ -132,10 +133,14 @@ public class StudentActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(filePath)), "image/*");
-                startActivity(intent);
+                if (student.getPhoto().isEmpty()) {
+                    Toast.makeText(StudentActivity.this, "此面试者没有上传照片。", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(new File(filePath)), "image/*");
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -180,15 +185,17 @@ public class StudentActivity extends AppCompatActivity {
     final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            int width = toolbarLayout.getWidth();
-            int height = toolbarLayout.getHeight();
-            float scale = 1.0f * width / height;
             Bitmap bitmap = (Bitmap) msg.obj;
             int w = bitmap.getWidth();
             int h = bitmap.getHeight();
             float scaleBitmap = 1.0f * w / h;
             int retX = 0;
             int retY = 0;
+            int width = toolbarLayout.getWidth();
+            int height = toolbarLayout.getHeight();
+            if (width == 0) width = 1080;
+            if (height == 0) height = 540;
+            float scale = 1.0f * width / height;
             if (scale > scaleBitmap) {
                 retY = (int) (h - (w / scale)) / 2;
                 h = (int) (w / scale);
