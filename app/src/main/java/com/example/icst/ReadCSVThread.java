@@ -83,7 +83,9 @@ public class ReadCSVThread extends Thread {
 
     @Override
     public void run() {
+        // 打开文件
         File csv = new File(path);
+        // 初始化
         groupDao.deleteAll();
         studentDao.deleteAll();
         BufferedReader br;
@@ -95,9 +97,14 @@ public class ReadCSVThread extends Thread {
         }
         String line;
         try {
+            // 循环读取整个文件
             while ((line = br.readLine()) != null) {
+                // 以 ',' 作为分隔符，分割字符串
                 String[] theLine = line.split(",");
+                // 一条 student 信息
                 if (theLine[0].contains("STUDENT")) {
+                    // 把字符串转为 Long,并作为ID
+                    // 读取各种数据
                     Long id = Long.parseLong(theLine[S_ID]);
                     String name = theLine[S_NAME];
                     boolean gender = theLine[S_GENDER].equals("男");
@@ -115,11 +122,13 @@ public class ReadCSVThread extends Thread {
                     String note = theLine[S_NOTE];
                     long groupID = Long.parseLong(theLine[S_GID]);
 
+                    // 创建一个消息，用于通知 Handler
                     msg = new Message();
                     msg.what = 1;
                     msg.obj = name;
                     handler.sendMessage(msg);
 
+                    // photo 不为空，则去下载图片
                     if (!photo.isEmpty()) {
                         //下载图片
                         try {
@@ -133,8 +142,11 @@ public class ReadCSVThread extends Thread {
                         }
                         //保存图片
                         try {
+                            // 获取保存文件的目录
                             File thumbnailDir = new File(Environment.getExternalStorageDirectory() + "/thumbnail");
                             File originalDir = new File(Environment.getExternalStorageDirectory() + "/original");
+
+                            // 看文件夹是否存在，不存在则创建
                             if (!thumbnailDir.exists())
                                 if (thumbnailDir.mkdirs())
                                     Log.i("Create Dir", "Success");
@@ -145,10 +157,16 @@ public class ReadCSVThread extends Thread {
                                     Log.i("Create Dir", "Success");
                                 else
                                     Log.e("Create Dir", "Fail");
+
+                            // 创建文件
                             File thumbnail = new File(thumbnailDir.getPath(), photo);
                             File original = new File(originalDir.getPath(), photo);
+
+                            // 创建流，
                             BufferedOutputStream thumbnailBos = new BufferedOutputStream(new FileOutputStream(thumbnail));
                             BufferedOutputStream originalBos = new BufferedOutputStream(new FileOutputStream(original));
+
+                            // 把已下载的图片，再下载两次？然后压缩，并写入两个流
                             Picasso.with(context)
                                     .load("http://files.jsform.com/" + photo)
                                     .resize(100, 100)
@@ -160,6 +178,7 @@ public class ReadCSVThread extends Thread {
                                     .get()
                                     .compress(Bitmap.CompressFormat.JPEG, 80, originalBos);
 
+                            // 刷新流，并关闭
                             thumbnailBos.flush();
                             thumbnailBos.close();
                             originalBos.flush();
@@ -169,6 +188,7 @@ public class ReadCSVThread extends Thread {
                         }
                     }
 
+                    // 向 Dao中插入读取的记录
                     studentDao.insert(new Student(
                             id,
                             name,
@@ -188,10 +208,15 @@ public class ReadCSVThread extends Thread {
                             groupID
                     ));
                 }
+                // 一条分组信息
                 if (theLine[0].contains("GROUP")) {
                     try {
-                        if (!theLine[G_DEPART].equals("0")) round = 2;
-                        if (!users.contains(theLine[G_HEAD])) users.add(theLine[G_HEAD]);
+                        if (!theLine[G_DEPART].equals("0"))
+                            round = 2;
+                        // 把 G_HEAD 加入 users
+                        if (!users.contains(theLine[G_HEAD]))
+                            users.add(theLine[G_HEAD]);
+                        // 向数据库插入新组
                         groupDao.insert(new Group(
                                 Long.parseLong(theLine[G_ID]),
                                 dateFormat.parse(theLine[G_TIME]),
@@ -200,6 +225,7 @@ public class ReadCSVThread extends Thread {
                                 theLine[G_HEADPHONE],
                                 Format.Department(theLine[G_DEPART])
                         ));
+                        // 向 Handler 发消息
                         msg = new Message();
                         msg.what = 1;
                         msg.obj = "正在分组...";
@@ -209,12 +235,14 @@ public class ReadCSVThread extends Thread {
                     }
                 }
             }
+            // 关闭 读取器
             try {
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            // 把 users 复制到 Array message中
             String[] message = new String[users.size()];
             message = users.toArray(message);
 

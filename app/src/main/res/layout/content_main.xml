@@ -8,7 +8,8 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <android.support.v7.widget.RecyclerView android:id="@+id/groupRecycleView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/groupRecycleView"
         android:paddingBottom="100dp"
         android:paddingTop="8dp"
         android:clipToPadding="false"

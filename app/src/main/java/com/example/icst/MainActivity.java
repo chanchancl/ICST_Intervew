@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,12 +42,11 @@ import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
+    private FloatingActionButton fab; // 漂浮按键， +
     private DaoSession session;
     private GroupDao groupDao;
     private StudentDao studentDao;
@@ -58,20 +56,31 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
 
+    // 应用启动时调用的函数
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // R是自动生成的文件，
+        // 设置当前的界面
         setContentView(R.layout.activity_main);
 
+        // 打开数据库？
         sharedPreferences = getSharedPreferences("SP", MODE_PRIVATE);
         Log.i("用户", sharedPreferences.getString("USER", "NULL"));
-        if (sharedPreferences.getInt("ROUND", 1) == 1) Log.i("ROUND", "第一轮");
-        else Log.i("ROUND", "第二轮");
+
+        // 根据 ROUND 来Log
+        if (sharedPreferences.getInt("ROUND", 1) == 1)
+            Log.i("ROUND", "第一轮");
+        else
+            Log.i("ROUND", "第二轮");
 
         //这个是toolbar
+        //找到 Toolbar,并设置为这个活动窗口的Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         //这个是圆形的悬浮按钮
+        //获取按钮，并设置为不可见
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
 
@@ -84,21 +93,29 @@ public class MainActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         String action = intent.getAction();
 
+        // 判断下一步动作
         if (Intent.ACTION_VIEW.equals(action)) {
+            // 检查下自己是否有某些权限，这个应该是读取 额外存储器，也就是内存卡
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
 
+                // 弹出一个窗口，设置标题，图标，消息，位置
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("读取数据")
                         .setIcon(R.drawable.ic_warning)
                         .setMessage("现有数据将被删除且无法恢复，确定继续？")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
+                            // 在上面的窗口点了 '确定'键则运行该函数
                             public void onClick(DialogInterface dialogInterface, int i) {
 
+                                // 创建一个对话框
                                 final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+                                // 窗口不能用 back键返回上一级
                                 progressDialog.setCancelable(false);
+                                // 设置风格
                                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                // 设置文本
                                 progressDialog.setMessage("读取数据...");
                                 //这是Handler 结尾处理UI的
                                 Handler handler = new Handler() {
@@ -108,10 +125,15 @@ public class MainActivity extends AppCompatActivity {
                                             progressDialog.setMessage((String) msg.obj);
                                             return;
                                         }
+                                        // 隐藏 proecess dialog
                                         progressDialog.dismiss();
+
+                                        // 添加数据 "ROUND" -> msg.arg1
                                         SharedPreferences.Editor editor = sharedPreferences.edit();
                                         editor.putInt("ROUND", msg.arg1);
                                         editor.apply();
+
+
                                         LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                                         View layout = inflater.inflate(R.layout.dialog_user, (ViewGroup) findViewById(R.id.linearLayout));
                                         final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) layout.findViewById(R.id.autoCompleteTextView);
@@ -133,11 +155,14 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 };
                                 Uri uri = intent.getData();
+                                // 显示刚才创建的对话框
                                 progressDialog.show();
+                                // 创建并启动一个线程，发送消息是，运行上边的 handler
                                 ReadCSVThread thread = new ReadCSVThread(uri.getPath(), MainActivity.this, MainActivity.this, handler);
                                 thread.start();
                             }
                         })
+                        // 如果点了 '取消'键，则什么都不做
                         .setNegativeButton("取消", null)
                         .show();
             } else {
@@ -159,10 +184,13 @@ public class MainActivity extends AppCompatActivity {
         if (mainAdapter != null)
             mainAdapter.notifyDataSetChanged();
 
-        if (groupDao == null) return;
+        if (groupDao == null)
+            return;
         setContentMain();
+
         //菜单按钮
-        if (mMenu == null) return;
+        if (mMenu == null)
+            return;
         String user = sharedPreferences.getString("USER", "NULL");
 
         QueryBuilder qb = groupDao.queryBuilder();
@@ -456,7 +484,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setContentMain() {
+        // 看是否有数据
         if (groupDao.count() != 0) {
+            // 显示 + 按钮，并设置按下后的动作
             fab.setVisibility(View.VISIBLE);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
