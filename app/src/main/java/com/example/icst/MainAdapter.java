@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder myViewHolder, int i) {
+    public void onBindViewHolder(final MyViewHolder myViewHolder, int i) {
         final long id = mData.get(i).getId();
         myViewHolder.mTitle.setText("第" + id + "组 - " + Format.Department(mData.get(myViewHolder.getAdapterPosition()).getDepart(), "首轮"));
         myViewHolder.mTime.setText(mData.get(i).getTimes());
@@ -54,6 +55,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MyViewHolder>{
         myViewHolder.mCardView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+
+                MainActivity.mPosition = myViewHolder.getAdapterPosition();
+                Log.i("Position",String.valueOf(MainActivity.mPosition));
+
                 Intent intent = new Intent(mContext,GroupActivity.class);
                 intent.putExtra(EXTRA_MESSAGE, id);
                 mContext.startActivity(intent);

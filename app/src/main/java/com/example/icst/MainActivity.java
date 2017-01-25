@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private Menu mMenu;
     private SharedPreferences sharedPreferences;
     public final static String STUDENT_ID = "com.example.icst.STUDENT";
+    public static int  mPosition;
 
     // 应用启动时调用的函数
     @Override
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         // R是自动生成的文件，
         // 设置当前的界面
         setContentView(R.layout.activity_main);
+
+        mPosition = 0;
 
         // 打开数据库？
         sharedPreferences = getSharedPreferences("SP", MODE_PRIVATE);
@@ -508,6 +511,7 @@ public class MainActivity extends AppCompatActivity {
             //隐藏“无数据”提示
             LinearLayout show = (LinearLayout) findViewById(R.id.emptyShow);
             show.setVisibility(View.GONE);
+
             //获取RecyclerView
             String user = sharedPreferences.getString("USER", "NULL");
             if (user.equals("Admin")) {
@@ -520,10 +524,14 @@ public class MainActivity extends AppCompatActivity {
                         .orderAsc(GroupDao.Properties.Id)
                         .build();
             }
+
             RecyclerView groupList = (RecyclerView) findViewById(R.id.groupRecycleView);
             groupList.setLayoutManager(new LinearLayoutManager(this));
+            groupList.scrollToPosition(mPosition);
             mainAdapter = new MainAdapter(groupQuery.list(), this);
+
             groupList.setAdapter(mainAdapter);
+
         }
         return;
     }
