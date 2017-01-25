@@ -113,11 +113,11 @@ app:layout_scrollFlags="scroll|enterAlways">
 </android.support.design.widget.AppBarLayout>
 
 <!--可滑动的布局内容-->
-<android.support.v7.widget.RecyclerView
-    android:id="@+id/studentRecycleView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/studentRecycleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>
 

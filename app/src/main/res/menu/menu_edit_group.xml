@@ -7,5 +7,5 @@
         android:id="@+id/action_done"
         android:icon="@drawable/ic_done_white_24dp"
         android:title="完成"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

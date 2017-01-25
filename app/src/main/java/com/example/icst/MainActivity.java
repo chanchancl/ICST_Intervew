@@ -178,14 +178,20 @@ public class MainActivity extends AppCompatActivity {
         setContentMain();
     }
 
+    // 恢复时调用
     @Override
     public void onResume() {
         super.onResume();
+
+        // Adapter 用来指示 分组数据如何在 mainActivity显示
+        // 所以如果 mainAdapter 存在，则回复时应该通知其数据集是否
         if (mainAdapter != null)
             mainAdapter.notifyDataSetChanged();
 
+        // 没有数据，返回
         if (groupDao == null)
             return;
+
         setContentMain();
 
         //菜单按钮
@@ -212,10 +218,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        // 从资源绑定菜单布局
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        // 隐藏按键
         menu.findItem(R.id.action_upload).setVisible(false);
         menu.findItem(R.id.action_import).setVisible(false);
         menu.findItem(R.id.action_round).setVisible(false);
+        // 设置该类的 mMenu成员
         mMenu = menu;
         return true;
     }

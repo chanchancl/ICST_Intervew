@@ -49,11 +49,13 @@ public class GroupActivity extends AppCompatActivity {
         //开始
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
+
         //Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         //组
         Intent intent = getIntent();
         long id = intent.getLongExtra(MainAdapter.EXTRA_MESSAGE, -1);
